@@ -4,11 +4,11 @@ So, you're curious about data and its potential to unlock valuable insights. You
 
 **Data Science: The Big Picture Architect**
 
-Imagine data science as a **grand architect**. It encompasses the entire data journey, from collecting and cleaning raw data to building models and extracting knowledge. Data scientists possess a diverse skillset, wielding tools like statistics, programming (think Python, R), and machine learning to tackle complex problems. Their ultimate goal? **Uncover hidden patterns and trends, build predictive models, and create data-driven solutions that solve real-world challenges.**
+It encompasses the entire data journey, from collecting and cleaning raw data to building models and extracting knowledge. Data scientists possess a diverse skillset, wielding tools like statistics, programming (think Python, R), and machine learning to tackle complex problems. Their ultimate goal? **Uncover hidden patterns and trends, build predictive models, and create data-driven solutions that solve real-world challenges.**
 
 **Data Analytics: The Interpreter & Storyteller**
 
-Think of data analytics as the **skilled interpreter** in this data play. They delve into the data, using statistical analysis and visualization techniques to **understand what's happening**. They answer specific questions, identify trends, and translate complex findings into clear, actionable insights. Data analysts are data storytellers, using charts, graphs, and reports to communicate their discoveries to both technical and non-technical audiences.
+They delve into the data, using statistical analysis and visualization techniques to **understand what's happening**. They answer specific questions, identify trends, and translate complex findings into clear, actionable insights. Data analysts are data storytellers, using charts, graphs, and reports to communicate their discoveries to both technical and non-technical audiences.
 
 **Key Differences: Focus & Skills**
 

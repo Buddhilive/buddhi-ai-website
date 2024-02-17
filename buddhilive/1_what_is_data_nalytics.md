@@ -17,8 +17,7 @@ Data analytics isn't magic; it's a systematic process. Here's a simplified overv
 1. **Define the problem:** What question do you want to answer? What data is relevant?
 2. **Collect and clean data:** Gather data from various sources and ensure its accuracy and completeness.
 3. **Explore and analyze data:** Use statistical methods, machine learning, and data visualization tools to identify trends and patterns.
-4. **Build models (optional):** Create algorithms to predict future outcomes or make recommendations.
-5. **Communicate insights:** Present findings in clear, actionable reports and visualizations for decision-makers.
+4. **Communicate insights:** Present findings in clear, actionable reports and visualizations for decision-makers.
 
 **Career Opportunities in Data Analytics: Charting Your Path**
 

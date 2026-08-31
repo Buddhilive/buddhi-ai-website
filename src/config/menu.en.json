@@ -5,21 +5,25 @@
       "url": "/"
     },
     {
-      "name": "Documentation",
-      "url": "/getting-started/introduction/overview/"
-    },
-    {
-      "name": "Reference",
+      "name": "Products",
       "url": "",
       "hasChildren": true,
       "children": [
         {
-          "name": "Configuration",
-          "url": "/reference/configuration/"
+          "name": "Web",
+          "url": "/web/"
         },
         {
-          "name": "Plugins Reference",
-          "url": "/reference/plugin/"
+          "name": "Studio",
+          "url": "/studio/"
+        },
+        {
+          "name": "CLI",
+          "url": "/cli/"
+        },
+        {
+          "name": "Harness",
+          "url": "/harness/"
         }
       ]
     }

@@ -1,11 +1,11 @@
 {
   "site": {
-    "title": "DocKit",
-    "logo": "/src/assets/logo-light.svg",
-    "logo_darkmode": "/src/assets/logo-dark.svg",
-    "logo_width": "127",
-    "logo_height": "32",
-    "logo_text": "DocKit"
+    "title": "BuddhiAI Documentation",
+    "logo": "/src/assets/logo.png",
+    "logo_darkmode": "/src/assets/logo.png",
+    "logo_width": "48",
+    "logo_height": "48",
+    "logo_text": "BuddhiAI"
   },
 
   "settings": {
@@ -18,7 +18,7 @@
       "enable": true,
       "action": "#"
     },
-    "copyright": "Designed and Developed by <a class=\"text-primary hover:underline no-underline\" href=\"https://themefisher.com\" target=\"_blank\" rel=\"noopener\" aria-label=\"Themefisher\">Themefisher</a> Copyright &copy; 2025."
+    "copyright": "Copyright &copy; 2026. BuddhiAI"
   },
 
   "navigation_button": {

@@ -28,8 +28,9 @@ export default defineConfig({
       logo: {
         light: logo,
         dark: logo_darkmode,
-        alt: "DocKit Logo",
+        alt: "BuddhiAI Logo",
       },
+      favicon: "src/assets/favicon.ico",
       // @ts-ignore
       social: social.main || [],
       locales,

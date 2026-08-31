@@ -1,0 +1,80 @@
+[
+  {
+    "node_id": "method:src/components/override-components/TableOfContents/starlight-toc.ts::StarlightTOC.constructor",
+    "kind": "method",
+    "name": "constructor",
+    "qualified_name": "StarlightTOC.constructor",
+    "file_path": "src/components/override-components/TableOfContents/starlight-toc.ts",
+    "language": "typescript",
+    "start_line": 20,
+    "end_line": 23,
+    "snippet": "constructor() {\r\n\t\tsuper();\r\n\t\tthis.onIdle(() => this.init());\r\n\t}",
+    "content_hash": "076301ee645125bbf49d2f59a31254a5f5ee4263b1c89bbea46703e8c7ca7a2c",
+    "parent_id": "class:src/components/override-components/TableOfContents/starlight-toc.ts::StarlightTOC",
+    "callers": [
+      "class:src/components/override-components/TableOfContents/starlight-toc.ts::StarlightTOC"
+    ],
+    "callees": [],
+    "doc_path": ".buddhi/docs/src/components/override-components/TableOfContents/starlight-toc/StarlightTOC.constructor.md",
+    "needs_generation": true
+  },
+  {
+    "node_id": "method:src/components/override-components/TableOfContents/starlight-toc.ts::StarlightTOC.current",
+    "kind": "method",
+    "name": "current",
+    "qualified_name": "StarlightTOC.current",
+    "file_path": "src/components/override-components/TableOfContents/starlight-toc.ts",
+    "language": "typescript",
+    "start_line": 10,
+    "end_line": 15,
+    "snippet": "protected set current(link: HTMLAnchorElement) {\r\n\t\tif (link === this._current) return;\r\n\t\tif (this._current) this._current.removeAttribute('aria-current');\r\n\t\tlink.setAttribute('aria-current', 'true');\r\n\t\tthis._current = link;\r\n\t}",
+    "content_hash": "7670031fe4d77adbd4cf78e01bbdc12d491475ef8d36566132b4677e955196bb",
+    "parent_id": "class:src/components/override-components/TableOfContents/starlight-toc.ts::StarlightTOC",
+    "callers": [
+      "class:src/components/override-components/TableOfContents/starlight-toc.ts::StarlightTOC"
+    ],
+    "callees": [],
+    "doc_path": ".buddhi/docs/src/components/override-components/TableOfContents/starlight-toc/StarlightTOC.current.md",
+    "needs_generation": true
+  },
+  {
+    "node_id": "method:src/components/override-components/TableOfContents/starlight-toc.ts::StarlightTOC.getRootMargin",
+    "kind": "method",
+    "name": "getRootMargin",
+    "qualified_name": "StarlightTOC.getRootMargin",
+    "file_path": "src/components/override-components/TableOfContents/starlight-toc.ts",
+    "language": "typescript",
+    "start_line": 102,
+    "end_line": 112,
+    "snippet": "private getRootMargin(): `-${number}px 0% ${number}px` {\r\n\t\tconst navBarHeight = document.querySelector('header')?.getBoundingClientRect().height || 0;\r\n\t\t// `<summary>` only exists in mobile ToC, so will fall back to 0 in large viewport component.\r\n\t\tconst mobileTocHeight = this.querySelector('summary')?.getBoundingClientRect().height || 0;\r\n\t\t/** Start intersections at nav height + 2rem padding. */\r\n\t\tconst top = navBarHeight + mobileTocHeight + 32;\r\n\t\t/** End intersections `53px` later. This is slightly more than the maximum `margin-top` in Markdown content. */\r\n\t\tconst bottom = top + 53;\r\n\t\tconst height = document.documentElement.clientHeight;\r\n\t\treturn `-${top}px 0% ${bottom - height}px`;\r\n\t}",
+    "content_hash": "ad69d8e224201d7ac8d9023572a15f42dbac0dc87279c64e9ba1cebe76c60de2",
+    "parent_id": "class:src/components/override-components/TableOfContents/starlight-toc.ts::StarlightTOC",
+    "callers": [
+      "class:src/components/override-components/TableOfContents/starlight-toc.ts::StarlightTOC"
+    ],
+    "callees": [],
+    "doc_path": ".buddhi/docs/src/components/override-components/TableOfContents/starlight-toc/StarlightTOC.getRootMargin.md",
+    "needs_generation": true
+  },
+  {
+    "node_id": "class:src/components/override-components/TableOfContents/starlight-toc.ts::StarlightTOC",
+    "kind": "class",
+    "name": "StarlightTOC",
+    "qualified_name": "StarlightTOC",
+    "file_path": "src/components/override-components/TableOfContents/starlight-toc.ts",
+    "language": "typescript",
+    "start_line": 5,
+    "end_line": 113,
+    "snippet": "class StarlightTOC extends HTMLElement {\r\n\tprivate _current = this.querySelector<HTMLAnchorElement>('a[aria-current=\"true\"]');\r\n\tprivate minH = parseInt(this.dataset.minH || '2', 10);\r\n\tprivate maxH = parseInt(this.dataset.maxH || '3', 10);\r\n\r\n\tprotected set current(link: HTMLAnchorElement) {\r\n\t\tif (link === this._current) return;\r\n\t\tif (this._current) this._current.removeAttribute('aria-current');\r\n\t\tlink.setAttribute('aria-current', 'true');\r\n\t\tthis._current = link;\r\n\t}\r\n\r\n\tprivate onIdle = (cb: IdleRequestCallback) =>\r\n\t\t(window.requestIdleCallback || ((cb) => setTimeout(cb, 1)))(cb);\r\n\r\n\tconstructor() {\r\n\t\tsuper();\r\n\t\tthis.onIdle(() => this.init());\r\n\t}\r\n\r\n\tprivate init = (): void => {\r\n\t\t/** All the links in the table of contents. */\r\n\t\tconst links = [...this.querySelectorAll('a')];\r\n\r\n\t\t/** Test if an element is a table-of-contents heading. */\r\n\t\tconst isHeading = (el: Element): el is HTMLHeadingElement => {\r\n\t\t\tif (el instanceof HTMLHeadingElement) {\r\n\t\t\t\t// Special case for page title h1\r\n\t\t\t\tif (el.id === PAGE_TITLE_ID) return true;\r\n\t\t\t\t// Check the heading level is within the user-configured limits for the ToC\r\n\t\t\t\tconst level = el.tagName[1];\r\n\t\t\t\tif (level) {\r\n\t\t\t\t\tconst int = parseInt(level, 10);\r\n\t\t\t\t\tif (int >= this.minH && int <= this.maxH) return true;\r\n\t\t\t\t}\r\n\t\t\t}\r\n\t\t\treturn false;\r\n\t\t};\r\n\r\n\t\t/** Walk up the DOM to find the nearest heading. */\r\n\t\tconst getElementHeading = (el: Element | null): HTMLHeadingElement | null => {\r\n\t\t\tif (!el) return null;\r\n\t\t\tconst origin = el;\r\n\t\t\twhile (el) {\r\n\t\t\t\tif (isHeading(el)) return el;\r\n\t\t\t\t// Assign the previous sibling\u2019s last, most deeply nested child to el.\r\n\t\t\t\tel = el.previousElementSibling;\r\n\t\t\t\twhile (el?.lastElementChild) {\r\n\t\t\t\t\tel = el.lastElementChild;\r\n\t\t\t\t}\r\n\t\t\t\t// Look for headings amongst siblings.\r\n\t\t\t\tconst h = getElementHeading(el);\r\n\t\t\t\tif (h) return h;\r\n\t\t\t}\r\n\t\t\t// Walk back up the parent.\r\n\t\t\treturn getElementHeading(origin.parentElement);\r\n\t\t};\r\n\r\n\t\t/** Handle intersections and set the current link to the heading for the current intersection. */\r\n\t\tconst setCurrent: IntersectionObserverCallback = (entries) => {\r\n\t\t\tfor (const { isIntersecting, target } of entries) {\r\n\t\t\t\tif (!isIntersecting) continue;\r\n\t\t\t\tconst heading = getElementHeading(target);\r\n\t\t\t\tif (!heading) continue;\r\n\t\t\t\tconst link = links.find((link) => link.hash === '#' + encodeURIComponent(heading.id));\r\n\t\t\t\tif (link) {\r\n\t\t\t\t\tthis.current = link;\r\n\t\t\t\t\tbreak;\r\n\t\t\t\t}\r\n\t\t\t}\r\n\t\t};\r\n\r\n\t\t// Observe elements with an `id` (most likely headings) and their siblings.\r\n\t\t// Also observe direct children of `.content` to include elements before\r\n\t\t// the first heading.\r\n\t\tconst toObserve = document.querySelectorAll('main [id], main [id] ~ *, main .content > *');\r\n\r\n\t\tlet observer: IntersectionObserver | undefined;\r\n\t\tconst observe = () => {\r\n\t\t\tif (observer) return;\r\n\t\t\tobserver = new IntersectionObserver(setCurrent, { rootMargin: this.getRootMargin() });\r\n\t\t\ttoObserve.forEach((h) => observer!.observe(h));\r\n\t\t};\r\n\t\tobserve();\r\n\r\n\t\tlet timeout: NodeJS.Timeout;\r\n\t\twindow.addEventListener('resize', () => {\r\n\t\t\t// Disable intersection observer while window is resizing.\r\n\t\t\tif (observer) {\r\n\t\t\t\tobserver.disconnect();\r\n\t\t\t\tobserver = undefined;\r\n\t\t\t}\r\n\t\t\tclearTimeout(timeout);\r\n\t\t\ttimeout = setTimeout(() => this.onIdle(observe), 200);\r\n\t\t});\r\n\t};\r\n\r\n\tprivate getRootMargin(): `-${number}px 0% ${number}px` {\r\n\t\tconst navBarHeight = document.querySelector('header')?.getBoundingClientRect().height || 0;\r\n\t\t// `<summary>` only exists in mobile ToC, so will fall back to 0 in large viewport component.\r\n\t\tconst mobileTocHeight = this.querySelector('summary')?.getBoundingClientRect().height || 0;\r\n\t\t/** Start intersections at nav height + 2rem padding. */\r\n\t\tconst top = navBarHeight + mobileTocHeight + 32;\r\n\t\t/** End intersections `53px` later. This is slightly more than the maximum `margin-top` in Markdown content. */\r\n\t\tconst bottom = top + 53;\r\n\t\tconst height = document.documentElement.clientHeight;\r\n\t\treturn \n\u2026 (truncated)",
+    "content_hash": "85768094fd87fbb04edcc735db713f44a2cdc4fade56b500768c9233633761d7",
+    "parent_id": "file:src/components/override-components/TableOfContents/starlight-toc.ts",
+    "callers": [],
+    "callees": [
+      "method:src/components/override-components/TableOfContents/starlight-toc.ts::StarlightTOC.constructor",
+      "method:src/components/override-components/TableOfContents/starlight-toc.ts::StarlightTOC.current",
+      "method:src/components/override-components/TableOfContents/starlight-toc.ts::StarlightTOC.getRootMargin"
+    ],
+    "doc_path": ".buddhi/docs/src/components/override-components/TableOfContents/starlight-toc/StarlightTOC.md",
+    "needs_generation": true
+  }
+]

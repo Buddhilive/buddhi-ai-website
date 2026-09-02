@@ -17,10 +17,14 @@ BuddhiAI is a client-side, privacy-first AI platform that runs large language mo
 
 ## Getting Started & Setup
 
+![BuddhAI Web Homepage](../../../assets/screenshots/buddhi-ai-web-homepage.png)
+
 ### Step 1: Access the Application
 
 1. Open your web browser and navigate to the [BuddhiAI Web App](https://ai.buddhilive.com).
 2. Click the "Start" call-to-action button to launch the application interface.
+
+![BuddhiAI Web App Start](../../../assets/screenshots/buddhi-ai-web-start.png)
 
 ### Step 2: Download & Initialize Models
 
@@ -31,3 +35,5 @@ On your first visit, the models must be downloaded and cached locally in your br
    - Gemma 4 E2B (LLM for generation and chat)
 3. Click Download to download the model.
 4. Allow the download and initialization to complete in the background.
+
+![BuddhAI Web App Model Download](../../../assets/screenshots/buddhi-ai-web-model-download.png)

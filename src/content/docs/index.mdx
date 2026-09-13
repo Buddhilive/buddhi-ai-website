@@ -1,37 +1,69 @@
 ---
-title: Dockit Build Documentation with Modern UI
-description: Get started building your docs site with DocKit.
+title: BuddhiAI Documentation & Ecosystem
+description: Explore BuddhiAI Web (in-browser privacy-first AI) and BuddhiAI CLI (code graph & agent harness).
 template: splash
 hero:
   title: |
-    Great <span data-icon-path='hero-icon.svg'></span> docs
-    <span class="light-text">developers love</span>
-  tagline: Discover tips, resources, and guidance to maximize experience with DocKit.
+    BuddhiAI <span data-icon-path='hero-icon.svg'></span>
+    <span class="light-text">Ecosystem</span>
+  tagline: Privacy-first local intelligence in your browser and graph-grounded agent infrastructure for developers.
 ---
 
 import Section from "~/components/Section.astro";
 import Card from "~/components/user-components/NewCard.astro";
 import Grid from "~/components/user-components/Grid.astro";
+import ListCard from "~/components/user-components/ListCard.astro";
+import LinkButton from "~/components/LinkButton.astro";
 
-<Section title="Powerful features
-<span class='light-text'>for documentations</span>" description="Explore the tools and design choices that make documentation efficient.">
+<Section
+  title="The BuddhiAI Ecosystem <span class='light-text'>at a glance</span>"
+  description="Two foundational pillars designed for privacy-first client inference and graph-grounded AI coding agents."
+>
+
+<Grid columns={2}>
+<ListCard title="BuddhiAI Web" imageIcon="/src/assets/element.svg" number="Privacy-First">
+- **100% In-Browser Execution**: Inference runs on local hardware using WebGPU.
+- **Google Gemma 4**: Integrated with Gemma 4 E2B and EmbeddingGemma 300m.
+- **Client-Side RAG**: Chat with your local documents without cloud data transfer.
+- **Reasoning Mode**: Toggleable chain-of-thought for complex problem solving.
+- **Interactive Knowledge Graph**: Visualize relationships between documents and ideas.
+
+<LinkButton href="/web/getting-started/" variant="text" className="mt-6 mb-8 ml-4">Explore BuddhiAI Web</LinkButton>
+</ListCard>
+
+<ListCard title="BuddhiAI CLI" imageIcon="/src/assets/code-block.svg" number="Developer Infrastructure">
+- **AST-Powered Code Graph**: Extracts classes, methods, and call hierarchies via tree-sitter into SQLite.
+- **Model Context Protocol (MCP)**: Provides `buddhi_search` and `buddhi_read` tools over StdIO.
+- **Google Antigravity Harness**: Scaffolds `.agents/` workflows, domain specialists, rules, and safety hooks.
+- **Spec-Driven Development (SDD)**: Enforces `/specify`, `/plan`, `/tasks`, `/implement`, and `/verify` lifecycles.
+- **Multi-Language Support**: Python, TypeScript/JS, Go, Rust, C#, Java, Kotlin, Swift.
+
+<LinkButton href="/cli/" variant="text" className="mt-6 mb-8 ml-4">Explore BuddhiAI CLI</LinkButton>
+</ListCard>
+</Grid>
+
+</Section>
+
+<Section
+  title="Core Capabilities <span class='light-text'>for Developers</span>"
+  description="Explore the tools and design choices powering modern AI applications."
+>
 
 <Grid columns={4}>
-  <Card title="Well organized" icon="substack" iconColor="#FF8585">
-    The transparency of our data will help you make the informed decisions you need to.
+  <Card title="Topology-Aware Search" icon="seti:code-search" iconColor="#FFD97B">
+    Graph expansion, lexical anchors, and Shannon entropy filtering for precise agent context.
   </Card>
-  <Card title="Lightning fast" icon="seti:vite" iconColor="#7BE1A4">
-  Our performance optimization ensures quick load times and a smooth user experience.
+  <Card title="100% Local Inference" icon="seti:vite" iconColor="#7BE1A4">
+    Run Gemma 4 models directly in your browser without sending sensitive prompts to external servers.
   </Card>
-
-<Card title="Powerful search" icon="seti:code-search" iconColor="#FFD97B">
-  Our search functionality helps users find information quickly and easily.
-</Card>
-<Card title="Very customized" icon="seti:config" iconColor="#979BFF">
-  Tailor the documentation to fit your brand and project needs with ease.
-</Card>
-
+  <Card title="Agentic SDD Lifecycle" icon="seti:plan" iconColor="#979BFF">
+    Rigorous specification, planning, and evidence-based verification inside Google Antigravity.
+  </Card>
+  <Card title="Privacy by Design" icon="substack" iconColor="#FF8585">
+    Zero data telemetry or code uploads — your source code and chats remain entirely on your machine.
+  </Card>
 </Grid>
+
 </Section>
 
 import HeroTabs from "~/components/HeroTabs.astro";
@@ -39,26 +71,26 @@ import HeroTabsItem from "~/components/HeroTabsItem.astro";
 
 <Section
   title="Get started quickly <span class='light-text'>in just 3 simple steps</span>"
-  description="A fast and frustration-free way to set up and start your documentation."
+  description="Launch in-browser intelligence or supercharge your developer agent harness in minutes."
 >
   <HeroTabs>
     <HeroTabsItem
-      title="Install our template"
-      subtitle="Set up in seconds with our template ."
+      title="Try BuddhiAI Web"
+      subtitle="Run Gemma 4 in your browser with client-side RAG at ai.buddhilive.com."
       number={1}
       image="/src/assets/step-1.png"
       imageAlt="Step 1 image"
     />
     <HeroTabsItem
-      title="Import what you need"
-      subtitle="Bring components or functions into projecs."
+      title="Install BuddhiAI CLI"
+      subtitle="Install via pip, pipx, or uv tool to access buddhi and buddhi-mcp."
       number={2}
       image="/src/assets/step-2.png"
       imageAlt="Step 2 image"
     />
     <HeroTabsItem
-      title="Start documentation"
-      subtitle="Start documenting your project immediately."
+      title="Initialize Your Codebase"
+      subtitle="Run buddhi init to generate the code graph and Antigravity harness."
       number={3}
       image="/src/assets/step-3.png"
       imageAlt="Step 3 image"
@@ -66,97 +98,11 @@ import HeroTabsItem from "~/components/HeroTabsItem.astro";
   </HeroTabs>
 </Section>
 
-import ListCard from "~/components/user-components/ListCard.astro";
-import LinkButton from "~/components/LinkButton.astro";
-
-<Section title="Feature topics for <span class='light-text'>our documentation</span>" description="Explore our featured topics and get an idea of our capabilities.">
-
-<Grid columns={3}>
-<ListCard title="UI Components" imageIcon="/src/assets/element.svg" number="15">
-- [Buttons & Links](/contents/components/using-components/)
-- [Navigation Menus](/contents/components/using-components/)
-- [Cards & Panels](/contents/components/using-components/)
-- [Tabs & Accordions](/contents/components/using-components/)
-- [Forms & Inputs](/contents/components/using-components/)
-- [Tables & Lists](/contents/components/using-components/)
-
-<LinkButton href="/contents/components/using-components/" variant="text" className="mt-6 mb-8 ml-4">View all components</LinkButton>
-</ListCard>
-
-<ListCard title="Content Writing" imageIcon="/src/assets/content.svg" number="18">
-- Markdown Basics
-- MDX Components
-- Code Examples
-- API Documentation
-- Tutorial Writing
-- Best Practices
-
-<LinkButton href="/contents/editing/add-new-doc/" variant="text" className="mt-6 mb-8 ml-4">View writing guide</LinkButton>
-</ListCard>
-
-<ListCard title="Page Layouts" imageIcon="/src/assets/layouts.svg" number="8">
-- Homepage Templates
-- Documentation Pages
-- API Reference Layout
-- Tutorial Structure
-- Landing Pages
-- Error Pages
-
-<LinkButton href="/getting-started/introduction/overview/" variant="text" className="mt-6 mb-8 ml-4">View layouts</LinkButton>
-</ListCard>
-</Grid>
-
-<Grid columns={3}>
-
-<ListCard title="Code Syntax" imageIcon="/src/assets/code-block.svg" number="10" image="/src/assets/code-image.png">
-
-- Syntax Highlighting
-- Line Numbers
-- Copy Button
-- Language Labels
-- Diff Highlighting
-- File Names
-
-<LinkButton
-  href="/getting-started/introduction/overview/"
-  variant="text"
-  className="mt-6 mb-8 ml-4"
->
-  View code guide
-</LinkButton>
-
-</ListCard>
-
-<ListCard title="Version History" imageIcon="/src/assets/changelogs.svg" number="25">
-
-- Release Notes
-- Feature Updates
-- Bug Fixes
-- Breaking Changes
-- Migration Guides
-- Deprecated Features
-
-<LinkButton
-  href="/getting-started/introduction/overview/"
-  variant="text"
-  className="mt-6 mb-8 ml-4"
->
-  View changelog
-</LinkButton>
-
-</ListCard>
-
-</Grid>
- 
-</Section>
-
-
-
 import ThemeDemo from "~/components/ThemeDemo.astro";
 
 <Section
   title="Switch easily from <span class='light-text'>dark/light mode</span>"
-  description="Dedicated toggle button to switch between dark and light mode."
+  description="Optimized contrast and syntax highlighting for daytime reading and nighttime coding."
 >
 
 <ThemeDemo
@@ -170,92 +116,66 @@ import AccordionContainer from "~/components/AccordionContainer.astro";
 import Accordion from "~/components/Accordion.astro";
 
 <Section
-  title="Have question? <span class='light-text'>We’re here to help</span>"
-  description="Get answers to the general questions people have asked."
+  title="Frequently Asked <span class='light-text'>Questions</span>"
+  description="Answers to common questions about the BuddhiAI platform and developer tools."
 >
 
 <AccordionContainer tabList={
   [
     {
       type: 'basic',
-      title: 'Getting Started',
-      subtitle:'Some questions about how to start.',
+      title: 'General Overview',
+      subtitle:'Understanding the BuddhiAI Ecosystem.',
       icon: "rocket"
-
     },
     {
       type: 'setting',
-      title: 'Settings & Configurations',
-      subtitle:'How to configure our documentation.',
+      title: 'BuddhiAI CLI & MCP',
+      subtitle:'Commands, code graphs, and agent harnesses.',
       icon: "settings"
-
     },
     {
       type: 'help',
-      title: 'Help & Support',
-      subtitle:'What type of support we provide.',
+      title: 'BuddhiAI Web & Privacy',
+      subtitle:'In-browser models and local document RAG.',
       icon: "support"
-
     }
-
-]
+  ]
 }>
 
 <Accordion
-  question="How do I get started with Dockit?"
-  answer="Simply install our template, import the components you need, and start documenting your project. The setup process takes just a few minutes."
+  question="What is the BuddhiAI Ecosystem?"
+  answer="The BuddhiAI Ecosystem consists of two interconnected products: BuddhiAI Web (a client-side in-browser AI platform running Gemma 4 models privately) and BuddhiAI CLI (a developer tool that creates AST code graphs, runs an MCP server, and scaffolds Antigravity agent harnesses for Spec-Driven Development)."
   type="basic"
 />
 <Accordion
-  question="What are the system requirements?"
-  answer="Dockit requires Node.js 18+ and works with any modern web browser. It's built on Astro and supports all major operating systems."
+  question="Is BuddhiAI open source?"
+  answer="Yes, BuddhiAI tools and documentation are open source and built to empower developers with privacy-centric AI workflows."
   type="basic"
 />
 <Accordion
-  question="Is Dockit free to use?"
-  answer="Yes, Dockit is completely free and open source. You can use it for personal and commercial projects without any limitations."
-  type="basic"
-/>
-<Accordion
-  question="Can I customize the design?"
-  answer="Absolutely! Dockit is highly customizable with Tailwind CSS. You can modify colors, layouts, components, and add your own branding."
-  type="basic"
-/>
-
-<Accordion
-  question="How do I change the theme colors?"
-  answer="You can customize theme colors by modifying the CSS custom properties in your theme configuration file or through the Tailwind config."
+  question="What are the system requirements for BuddhiAI CLI?"
+  answer="BuddhiAI CLI requires Python 3.10 or newer. It runs smoothly on macOS, Linux, and Windows."
   type="setting"
 />
 <Accordion
-  question="Can I add custom components?"
-  answer="Yes, you can create and add custom Astro components. Simply place them in the components folder and import them where needed."
+  question="How does BuddhiAI CLI help AI coding agents?"
+  answer="Instead of blindly grepping raw files or overflowing token budgets, BuddhiAI CLI turns the codebase into an AST code graph in SQLite and exposes buddhi_search and buddhi_read tools via the Model Context Protocol (MCP). Agents can inspect call hierarchies and read compressed files within strict token budgets."
   type="setting"
 />
 <Accordion
-  question="How do I configure navigation?"
-  answer="Navigation is configured through the menu.json file in your config folder. You can add, remove, or reorder menu items as needed."
+  question="What is Spec-Driven Development (SDD)?"
+  answer="SDD is a disciplined software engineering process supported by BuddhiAI CLI. It guides coding agents through structured phases: /specify (requirements & user stories), /plan (architectural design), /tasks (actionable breakdown), /implement (code execution), and /verify (evidence-based testing)."
   type="setting"
 />
 <Accordion
-  question="Can I use my own domain?"
-  answer="Yes, you can deploy Dockit to any hosting service and use your custom domain. We provide deployment guides for popular platforms."
-  type="setting"
-/>
-
-<Accordion
-  question="Where can I get help?"
-  answer="You can get help through our GitHub discussions, documentation, or community Discord server. We also provide email support for complex issues."
+  question="Does BuddhiAI Web send my documents to a server?"
+  answer="No. BuddhiAI Web executes large language models (such as Gemma 4) and embedding models directly inside your browser using WebGPU. Your uploaded documents and chat conversations never leave your local device."
   type="help"
 />
 <Accordion
-  question="How do I report bugs?"
-  answer="Please report bugs through our GitHub issues page with detailed information about the problem and steps to reproduce it."
-  type="help"
-/>
-<Accordion
-  question="Do you offer premium support?"
-  answer="While Dockit is free, we offer premium consulting services for custom implementations and enterprise deployments."
+  question="Can I use BuddhiAI Web offline?"
+  answer="Yes! Once the model weights are downloaded and cached in your browser storage on first launch, BuddhiAI Web can operate completely offline without an active internet connection."
   type="help"
 />
 

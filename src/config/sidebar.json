@@ -3,67 +3,16 @@
     {
       "label": "Web",
       "translations": {
-        "fr": "Configurations"
+        "fr": "Web"
       },
       "autogenerate": { "directory": "web" }
     },
     {
-      "label": "Studio",
-      "translations": {
-        "fr": "Commencer"
-      },
-      "items": [
-        {
-          "label": "[seti:vite] Introduction",
-          "translations": {
-            "fr": "[seti:vite] Introduction"
-          },
-          "autogenerate": { "directory": "studio/introduction" }
-        },
-        {
-          "label": "[setting] Global Settings",
-          "translations": {
-            "fr": "[setting] Paramètres globaux"
-          },
-          "autogenerate": { "directory": "studio/global-settings" }
-        },
-        {
-          "label": "[seti:plan] Navigation",
-          "translations": {
-            "fr": "[seti:plan] Navigation"
-          },
-          "slug": "studio/navigation"
-        }
-      ]
-    },
-    {
       "label": "CLI",
       "translations": {
-        "fr": "Contenu"
+        "fr": "CLI"
       },
-      "items": [
-        {
-          "label": "[document] Components and Block",
-          "translations": {
-            "fr": "[document] Composants et blocs"
-          },
-          "autogenerate": { "directory": "cli/components" }
-        },
-        {
-          "label": "[pencil] Editing Content",
-          "translations": {
-            "fr": "[pencil] Édition du contenu"
-          },
-          "autogenerate": { "directory": "cli/editing" }
-        }
-      ]
-    },
-    {
-      "label": "Harness",
-      "translations": {
-        "fr": "Harness"
-      },
-      "autogenerate": { "directory": "harness" }
+      "autogenerate": { "directory": "cli" }
     }
   ]
 }

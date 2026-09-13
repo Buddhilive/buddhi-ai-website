@@ -14,16 +14,8 @@
           "url": "/web/"
         },
         {
-          "name": "Studio",
-          "url": "/studio/"
-        },
-        {
           "name": "CLI",
           "url": "/cli/"
-        },
-        {
-          "name": "Harness",
-          "url": "/harness/"
         }
       ]
     }

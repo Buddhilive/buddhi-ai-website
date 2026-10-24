@@ -5,21 +5,17 @@
       "url": "/"
     },
     {
-      "name": "Documentation",
-      "url": "/getting-started/introduction/overview/"
-    },
-    {
-      "name": "Reference",
+      "name": "Products",
       "url": "",
       "hasChildren": true,
       "children": [
         {
-          "name": "Configuration",
-          "url": "/reference/configuration/"
+          "name": "Web",
+          "url": "/web/"
         },
         {
-          "name": "Plugins Reference",
-          "url": "/reference/plugin/"
+          "name": "CLI",
+          "url": "/cli/"
         }
       ]
     }

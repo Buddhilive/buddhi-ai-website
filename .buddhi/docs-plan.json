@@ -1,0 +1,139 @@
+[
+  {
+    "node_id": "function:.agents/hooks/guard_destructive.py::extract_command",
+    "kind": "function",
+    "name": "extract_command",
+    "qualified_name": "extract_command",
+    "file_path": ".agents/hooks/guard_destructive.py",
+    "language": "python",
+    "start_line": 88,
+    "end_line": 121,
+    "snippet": "def extract_command(payload):\n    \"\"\"Pull the shell command string out of a tool-call payload, if any.\n\n    The field holding the command text varies by tool/hook shape, so check\n    a few known locations in order. This hook only ever backstops\n    shell/terminal-command-shaped tool calls (run_command, git-specialist\n    shells out, etc.) \u2014 if none of those fields are present (or the payload\n    isn't a dict), this is not a command invocation at all (e.g. a Write/Edit\n    of file content), and there is nothing to safely pattern-match against:\n    return None rather than stringifying the whole payload, which would\n    otherwise deny file writes whose *content* merely mentions a destructive\n    command (including this harness's own rule docs).\n    \"\"\"\n    if isinstance(payload, dict):\n        for key in (\"command\", \"cmd\"):\n            value = payload.get(key)\n            if isinstance(value, str):\n                return value\n\n        for outer_key, inner_key in (\n            (\"input\", \"command\"),\n            (\"tool_input\", \"command\"),\n            (\"parameters\", \"command\"),\n            (\"input\", \"cmd\"),\n            (\"tool_input\", \"cmd\"),\n            (\"parameters\", \"cmd\"),\n        ):\n            outer = payload.get(outer_key)\n            if isinstance(outer, dict):\n                inner = outer.get(inner_key)\n                if isinstance(inner, str):\n                    return inner\n\n    return None",
+    "content_hash": "2ab0f43d754a4ad035b45eacec41f7d4ea720a0b2a43714ae3331205d64ef141",
+    "parent_id": "file:.agents/hooks/guard_destructive.py",
+    "callers": [
+      "function:.agents/hooks/guard_destructive.py::decide"
+    ],
+    "callees": [],
+    "doc_path": ".buddhi/docs/.agents/hooks/guard_destructive/extract_command.md",
+    "needs_generation": true
+  },
+  {
+    "node_id": "function:.agents/hooks/guard_destructive.py::decide",
+    "kind": "function",
+    "name": "decide",
+    "qualified_name": "decide",
+    "file_path": ".agents/hooks/guard_destructive.py",
+    "language": "python",
+    "start_line": 124,
+    "end_line": 138,
+    "snippet": "def decide(payload):\n    command = extract_command(payload)\n    if command is None:\n        # Not a shell/terminal-command-shaped tool call \u2014 nothing to check,\n        # so fail open rather than scanning unrelated payloads (file content,\n        # etc.) against command deny-patterns.\n        return {\"decision\": \"allow\"}\n\n    for pattern, reason, confirmable in DENY_RULES:\n        if pattern.search(command):\n            if confirmable and CONFIRMED_MARKER in command:\n                continue\n            return {\"decision\": \"deny\", \"reason\": reason}\n\n    return {\"decision\": \"allow\"}",
+    "content_hash": "6e931688b52557d482090c1726920914bd66b62d79cba667b86e3d3fe55cc009",
+    "parent_id": "file:.agents/hooks/guard_destructive.py",
+    "callers": [
+      "function:.agents/hooks/guard_destructive.py::main"
+    ],
+    "callees": [
+      "function:.agents/hooks/guard_destructive.py::extract_command"
+    ],
+    "doc_path": ".buddhi/docs/.agents/hooks/guard_destructive/decide.md",
+    "needs_generation": true
+  },
+  {
+    "node_id": "function:.agents/hooks/guard_destructive.py::main",
+    "kind": "function",
+    "name": "main",
+    "qualified_name": "main",
+    "file_path": ".agents/hooks/guard_destructive.py",
+    "language": "python",
+    "start_line": 141,
+    "end_line": 151,
+    "snippet": "def main():\n    try:\n        raw = sys.stdin.read()\n        payload = json.loads(raw)\n        result = decide(payload)\n    except Exception:  # noqa: BLE001 - must never block tool use on this hook's own bugs\n        # Never block tool use because this hook itself is broken or the\n        # input was malformed/non-JSON.\n        result = {\"decision\": \"allow\"}\n\n    print(json.dumps(result))",
+    "content_hash": "50e43ce8faa5abf53d410b09440fe1da60c0d32813d5c9991b38310f10e56c70",
+    "parent_id": "file:.agents/hooks/guard_destructive.py",
+    "callers": [],
+    "callees": [
+      "function:.agents/hooks/guard_destructive.py::decide"
+    ],
+    "doc_path": ".buddhi/docs/.agents/hooks/guard_destructive/main.md",
+    "needs_generation": true
+  },
+  {
+    "node_id": "method:src/components/override-components/TableOfContents/starlight-toc.ts::StarlightTOC.constructor",
+    "kind": "method",
+    "name": "constructor",
+    "qualified_name": "StarlightTOC.constructor",
+    "file_path": "src/components/override-components/TableOfContents/starlight-toc.ts",
+    "language": "typescript",
+    "start_line": 20,
+    "end_line": 23,
+    "snippet": "constructor() {\r\n\t\tsuper();\r\n\t\tthis.onIdle(() => this.init());\r\n\t}",
+    "content_hash": "076301ee645125bbf49d2f59a31254a5f5ee4263b1c89bbea46703e8c7ca7a2c",
+    "parent_id": "class:src/components/override-components/TableOfContents/starlight-toc.ts::StarlightTOC",
+    "callers": [
+      "class:src/components/override-components/TableOfContents/starlight-toc.ts::StarlightTOC"
+    ],
+    "callees": [],
+    "doc_path": ".buddhi/docs/src/components/override-components/TableOfContents/starlight-toc/StarlightTOC.constructor.md",
+    "needs_generation": true
+  },
+  {
+    "node_id": "method:src/components/override-components/TableOfContents/starlight-toc.ts::StarlightTOC.current",
+    "kind": "method",
+    "name": "current",
+    "qualified_name": "StarlightTOC.current",
+    "file_path": "src/components/override-components/TableOfContents/starlight-toc.ts",
+    "language": "typescript",
+    "start_line": 10,
+    "end_line": 15,
+    "snippet": "protected set current(link: HTMLAnchorElement) {\r\n\t\tif (link === this._current) return;\r\n\t\tif (this._current) this._current.removeAttribute('aria-current');\r\n\t\tlink.setAttribute('aria-current', 'true');\r\n\t\tthis._current = link;\r\n\t}",
+    "content_hash": "7670031fe4d77adbd4cf78e01bbdc12d491475ef8d36566132b4677e955196bb",
+    "parent_id": "class:src/components/override-components/TableOfContents/starlight-toc.ts::StarlightTOC",
+    "callers": [
+      "class:src/components/override-components/TableOfContents/starlight-toc.ts::StarlightTOC"
+    ],
+    "callees": [],
+    "doc_path": ".buddhi/docs/src/components/override-components/TableOfContents/starlight-toc/StarlightTOC.current.md",
+    "needs_generation": true
+  },
+  {
+    "node_id": "method:src/components/override-components/TableOfContents/starlight-toc.ts::StarlightTOC.getRootMargin",
+    "kind": "method",
+    "name": "getRootMargin",
+    "qualified_name": "StarlightTOC.getRootMargin",
+    "file_path": "src/components/override-components/TableOfContents/starlight-toc.ts",
+    "language": "typescript",
+    "start_line": 102,
+    "end_line": 112,
+    "snippet": "private getRootMargin(): `-${number}px 0% ${number}px` {\r\n\t\tconst navBarHeight = document.querySelector('header')?.getBoundingClientRect().height || 0;\r\n\t\t// `<summary>` only exists in mobile ToC, so will fall back to 0 in large viewport component.\r\n\t\tconst mobileTocHeight = this.querySelector('summary')?.getBoundingClientRect().height || 0;\r\n\t\t/** Start intersections at nav height + 2rem padding. */\r\n\t\tconst top = navBarHeight + mobileTocHeight + 32;\r\n\t\t/** End intersections `53px` later. This is slightly more than the maximum `margin-top` in Markdown content. */\r\n\t\tconst bottom = top + 53;\r\n\t\tconst height = document.documentElement.clientHeight;\r\n\t\treturn `-${top}px 0% ${bottom - height}px`;\r\n\t}",
+    "content_hash": "ad69d8e224201d7ac8d9023572a15f42dbac0dc87279c64e9ba1cebe76c60de2",
+    "parent_id": "class:src/components/override-components/TableOfContents/starlight-toc.ts::StarlightTOC",
+    "callers": [
+      "class:src/components/override-components/TableOfContents/starlight-toc.ts::StarlightTOC"
+    ],
+    "callees": [],
+    "doc_path": ".buddhi/docs/src/components/override-components/TableOfContents/starlight-toc/StarlightTOC.getRootMargin.md",
+    "needs_generation": true
+  },
+  {
+    "node_id": "class:src/components/override-components/TableOfContents/starlight-toc.ts::StarlightTOC",
+    "kind": "class",
+    "name": "StarlightTOC",
+    "qualified_name": "StarlightTOC",
+    "file_path": "src/components/override-components/TableOfContents/starlight-toc.ts",
+    "language": "typescript",
+    "start_line": 5,
+    "end_line": 113,
+    "snippet": "class StarlightTOC extends HTMLElement {\r\n\tprivate _current = this.querySelector<HTMLAnchorElement>('a[aria-current=\"true\"]');\r\n\tprivate minH = parseInt(this.dataset.minH || '2', 10);\r\n\tprivate maxH = parseInt(this.dataset.maxH || '3', 10);\r\n\r\n\tprotected set current(link: HTMLAnchorElement) {\r\n\t\tif (link === this._current) return;\r\n\t\tif (this._current) this._current.removeAttribute('aria-current');\r\n\t\tlink.setAttribute('aria-current', 'true');\r\n\t\tthis._current = link;\r\n\t}\r\n\r\n\tprivate onIdle = (cb: IdleRequestCallback) =>\r\n\t\t(window.requestIdleCallback || ((cb) => setTimeout(cb, 1)))(cb);\r\n\r\n\tconstructor() {\r\n\t\tsuper();\r\n\t\tthis.onIdle(() => this.init());\r\n\t}\r\n\r\n\tprivate init = (): void => {\r\n\t\t/** All the links in the table of contents. */\r\n\t\tconst links = [...this.querySelectorAll('a')];\r\n\r\n\t\t/** Test if an element is a table-of-contents heading. */\r\n\t\tconst isHeading = (el: Element): el is HTMLHeadingElement => {\r\n\t\t\tif (el instanceof HTMLHeadingElement) {\r\n\t\t\t\t// Special case for page title h1\r\n\t\t\t\tif (el.id === PAGE_TITLE_ID) return true;\r\n\t\t\t\t// Check the heading level is within the user-configured limits for the ToC\r\n\t\t\t\tconst level = el.tagName[1];\r\n\t\t\t\tif (level) {\r\n\t\t\t\t\tconst int = parseInt(level, 10);\r\n\t\t\t\t\tif (int >= this.minH && int <= this.maxH) return true;\r\n\t\t\t\t}\r\n\t\t\t}\r\n\t\t\treturn false;\r\n\t\t};\r\n\r\n\t\t/** Walk up the DOM to find the nearest heading. */\r\n\t\tconst getElementHeading = (el: Element | null): HTMLHeadingElement | null => {\r\n\t\t\tif (!el) return null;\r\n\t\t\tconst origin = el;\r\n\t\t\twhile (el) {\r\n\t\t\t\tif (isHeading(el)) return el;\r\n\t\t\t\t// Assign the previous sibling\u2019s last, most deeply nested child to el.\r\n\t\t\t\tel = el.previousElementSibling;\r\n\t\t\t\twhile (el?.lastElementChild) {\r\n\t\t\t\t\tel = el.lastElementChild;\r\n\t\t\t\t}\r\n\t\t\t\t// Look for headings amongst siblings.\r\n\t\t\t\tconst h = getElementHeading(el);\r\n\t\t\t\tif (h) return h;\r\n\t\t\t}\r\n\t\t\t// Walk back up the parent.\r\n\t\t\treturn getElementHeading(origin.parentElement);\r\n\t\t};\r\n\r\n\t\t/** Handle intersections and set the current link to the heading for the current intersection. */\r\n\t\tconst setCurrent: IntersectionObserverCallback = (entries) => {\r\n\t\t\tfor (const { isIntersecting, target } of entries) {\r\n\t\t\t\tif (!isIntersecting) continue;\r\n\t\t\t\tconst heading = getElementHeading(target);\r\n\t\t\t\tif (!heading) continue;\r\n\t\t\t\tconst link = links.find((link) => link.hash === '#' + encodeURIComponent(heading.id));\r\n\t\t\t\tif (link) {\r\n\t\t\t\t\tthis.current = link;\r\n\t\t\t\t\tbreak;\r\n\t\t\t\t}\r\n\t\t\t}\r\n\t\t};\r\n\r\n\t\t// Observe elements with an `id` (most likely headings) and their siblings.\r\n\t\t// Also observe direct children of `.content` to include elements before\r\n\t\t// the first heading.\r\n\t\tconst toObserve = document.querySelectorAll('main [id], main [id] ~ *, main .content > *');\r\n\r\n\t\tlet observer: IntersectionObserver | undefined;\r\n\t\tconst observe = () => {\r\n\t\t\tif (observer) return;\r\n\t\t\tobserver = new IntersectionObserver(setCurrent, { rootMargin: this.getRootMargin() });\r\n\t\t\ttoObserve.forEach((h) => observer!.observe(h));\r\n\t\t};\r\n\t\tobserve();\r\n\r\n\t\tlet timeout: NodeJS.Timeout;\r\n\t\twindow.addEventListener('resize', () => {\r\n\t\t\t// Disable intersection observer while window is resizing.\r\n\t\t\tif (observer) {\r\n\t\t\t\tobserver.disconnect();\r\n\t\t\t\tobserver = undefined;\r\n\t\t\t}\r\n\t\t\tclearTimeout(timeout);\r\n\t\t\ttimeout = setTimeout(() => this.onIdle(observe), 200);\r\n\t\t});\r\n\t};\r\n\r\n\tprivate getRootMargin(): `-${number}px 0% ${number}px` {\r\n\t\tconst navBarHeight = document.querySelector('header')?.getBoundingClientRect().height || 0;\r\n\t\t// `<summary>` only exists in mobile ToC, so will fall back to 0 in large viewport component.\r\n\t\tconst mobileTocHeight = this.querySelector('summary')?.getBoundingClientRect().height || 0;\r\n\t\t/** Start intersections at nav height + 2rem padding. */\r\n\t\tconst top = navBarHeight + mobileTocHeight + 32;\r\n\t\t/** End intersections `53px` later. This is slightly more than the maximum `margin-top` in Markdown content. */\r\n\t\tconst bottom = top + 53;\r\n\t\tconst height = document.documentElement.clientHeight;\r\n\t\treturn \n\u2026 (truncated)",
+    "content_hash": "85768094fd87fbb04edcc735db713f44a2cdc4fade56b500768c9233633761d7",
+    "parent_id": "file:src/components/override-components/TableOfContents/starlight-toc.ts",
+    "callers": [],
+    "callees": [
+      "method:src/components/override-components/TableOfContents/starlight-toc.ts::StarlightTOC.constructor",
+      "method:src/components/override-components/TableOfContents/starlight-toc.ts::StarlightTOC.current",
+      "method:src/components/override-components/TableOfContents/starlight-toc.ts::StarlightTOC.getRootMargin"
+    ],
+    "doc_path": ".buddhi/docs/src/components/override-components/TableOfContents/starlight-toc/StarlightTOC.md",
+    "needs_generation": true
+  }
+]

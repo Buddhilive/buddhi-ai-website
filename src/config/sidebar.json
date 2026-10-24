@@ -1,69 +1,18 @@
 {
   "main": [
     {
-      "label": "Getting Started",
+      "label": "Web",
       "translations": {
-        "fr": "Commencer"
+        "fr": "Web"
       },
-      "items": [
-        {
-          "label": "[seti:vite] Introduction",
-          "translations": {
-            "fr": "[seti:vite] Introduction"
-          },
-          "autogenerate": { "directory": "getting-started/introduction" }
-        },
-        {
-          "label": "[setting] Global Settings",
-          "translations": {
-            "fr": "[setting] Paramètres globaux"
-          },
-          "autogenerate": { "directory": "getting-started/global-settings" }
-        },
-        {
-          "label": "[seti:plan] Navigation",
-          "translations": {
-            "fr": "[seti:plan] Navigation"
-          },
-          "slug": "getting-started/navigation"
-        }
-      ]
+      "autogenerate": { "directory": "web" }
     },
     {
-      "label": "Content",
+      "label": "CLI",
       "translations": {
-        "fr": "Contenu"
+        "fr": "CLI"
       },
-      "items": [
-        {
-          "label": "[document] Components and Block",
-          "translations": {
-            "fr": "[document] Composants et blocs"
-          },
-          "autogenerate": { "directory": "contents/components" }
-        },
-        {
-          "label": "[pencil] Editing Content",
-          "translations": {
-            "fr": "[pencil] Édition du contenu"
-          },
-          "autogenerate": { "directory": "contents/editing" }
-        }
-      ]
-    },
-    {
-      "label": "Reference",
-      "translations": {
-        "fr": "Référence"
-      },
-      "autogenerate": { "directory": "reference" }
-    },
-    {
-      "label": "Configurations",
-      "translations": {
-        "fr": "Configurations"
-      },
-      "autogenerate": { "directory": "configurations" }
+      "autogenerate": { "directory": "cli" }
     }
   ]
 }

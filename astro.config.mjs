@@ -40,6 +40,22 @@ export default defineConfig({
       locales,
       sidebar: sidebar.main || [],
       customCss: ["./src/styles/global.css"],
+      head: [
+        {
+          tag: "script",
+          attrs: {
+            src: "https://www.googletagmanager.com/gtag/js?id=G-FBTRLM909R",
+            async: true,
+          },
+        },
+        {
+          tag: "script",
+          content: `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-FBTRLM909R');`,
+        },
+      ],
       components: {
         Head: "./src/components/override-components/Head.astro",
         Header: "./src/components/override-components/Header.astro",

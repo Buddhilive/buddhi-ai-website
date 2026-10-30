@@ -1,5 +1,6 @@
 ---
 import Search from "./Search.astro";
+import { withBaseUrl } from "@/lib/utils/withBaseUrl";
 const { data } = Astro.locals.starlightRoute.entry;
 const { title = data.title, tagline } = data.hero || {};
 const { sidebar } = Astro.locals.starlightRoute;
@@ -40,11 +41,11 @@ const is404 = Astro.locals.starlightRoute?.id === "404";
           <div class="flex gap-4 badges px-3 py-2.5 rounded-xl flex-wrap justify-center">
             {sidebar.map((item: any) => {
               const href = getFirstHref(item);
-              return (
+              return href && (
                 <div class="badge rounded-lg px-2 py-1.5 group transition">
                   <a
                     class="cursor-pointer text-text no-underline group-hover:text-black dark:group-hover:text-white transition-colors"
-                    href={href}
+                    href={withBaseUrl(href, import.meta.env.BASE_URL)}
                   >
                     {item.label}
                   </a>
@@ -104,12 +105,14 @@ const is404 = Astro.locals.starlightRoute?.id === "404";
   const iconElements = document.querySelector("[data-icon-path]");
   const heroSection = document.querySelector(".hero");
   const header = document.querySelector(".header");
-  const heroBG = document.querySelector(".hero-bg") as HTMLElement;
+  const heroBG = document.querySelector<HTMLElement>(".hero-bg");
 
   const totalHeight =
     (heroSection?.clientHeight || 0) + (header?.clientHeight || 0) + 24;
 
-  heroBG.style.height = `${totalHeight}px`;
+  if (heroBG) {
+    heroBG.style.height = `${totalHeight}px`;
+  }
 
   // make image element and add the path to src
   if (iconElements) {

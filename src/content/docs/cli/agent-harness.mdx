@@ -1,0 +1,68 @@
+---
+title: Antigravity agent harness
+description: Configure and use the Antigravity workflows, agents, skills, rules, hooks, and templates scaffolded by BuddhiAI CLI.
+sidebar:
+  order: 9
+  label: Agent harness
+---
+
+import { withBaseUrl } from "@/lib/utils/withBaseUrl";
+
+`buddhi init` can scaffold an Antigravity harness in `.agents/`. The harness connects a workspace to `buddhi-mcp` and provides reusable workflows, specialist agent definitions, rules, hooks, templates, and a memory index. Existing customized harness files are preserved when `buddhi init` runs again.
+
+## What gets scaffolded
+
+| Path | Purpose |
+| --- | --- |
+| `.agents/mcp_config.json` | Registers the workspace MCP server. |
+| `.agents/skills/` | Provides slash-invoked workflows and supporting skills. |
+| `.agents/agents/` | Contains specialist agent definitions. |
+| `.agents/rules/` | Stores project-level agent rules. |
+| `.agents/hooks.json` and `.agents/hooks/` | Configure lifecycle hooks, including the destructive-command guard. |
+| `.agents/templates/` | Holds specification, plan, task, review, and agent templates. |
+| `.agents/memory/` | Contains the memory index and topic files. |
+
+The exact set of bundled files can change between BuddhiAI CLI releases. Inspect the generated `.agents/` directory in the target project.
+
+## Spec-Driven Development
+
+Use the SDD workflow to describe and verify a change before considering it complete:
+
+1. `/specify` creates a feature specification with prioritized, testable user stories.
+2. `/spec-plan` grounds an architectural plan in the repository and consults domain specialists.
+3. `/spec-tasks` turns the spec and plan into phased implementation tasks.
+4. `/implement` executes tasks and records progress.
+5. `/verify` runs the project checks and maps results to acceptance criteria.
+
+`buddhi sdd` provides supporting helpers used by these workflows. See the <a href={withBaseUrl("/cli/commands/#buddhi-sdd", import.meta.env.BASE_URL)}>command reference</a>.
+
+## Other bundled workflows
+
+- `/ask` refreshes and queries the code graph to explain project structure.
+- `/agents-md` creates or updates project instructions while preserving custom sections.
+- `/quick-plan` prepares a lightweight implementation plan.
+- `/document-codebase` generates or refreshes OKF symbol documentation.
+- `/debug` investigates a reported issue and prepares a root-cause explanation.
+- `/remember` records durable project conventions, decisions, or preferences.
+- `/status` reports the harness state, including documentation freshness and open plans.
+
+The CLI also bundles skills for design systems, accessibility, anti-slop review, testing, refactoring, documentation, performance, and visual review. Examples include `/design-md`, `/a11y`, `/antislop`, `/write-tests`, `/refactor-clean`, `/write-docs`, `/audit-performance`, and `/compare-screenshots`. See the `.agents/skills/` directory created in the project for the complete installed list and each skill's instructions.
+
+## Specialist agents
+
+The harness includes read-only specialists for frontend, backend, database, testing, security, deployment, and Git work. The `/spec-plan` and `/quick-plan` workflows can dispatch relevant specialists; `terminal-runner` is used for shell commands, builds, and tests.
+
+## Rules, hooks, and memory
+
+- Rules provide shared guidance for graph and OKF documentation use, safety, accessibility, and code conventions.
+- The `PreToolUse` hook in `.agents/hooks/guard_destructive.py` blocks selected destructive operations, including force pushes, hard resets, and database drop or truncate commands. Treat it as a safety backstop, not a replacement for reviewing a command.
+- `.agents/memory/MEMORY.md` indexes project memory topics. The `buddhi memory` commands manage structured concepts, source references, and index updates; see <a href={withBaseUrl("/cli/memory/", import.meta.env.BASE_URL)}>Project memory</a>.
+
+## A typical workflow
+
+1. Install BuddhiAI CLI and initialize a repository with `buddhi init`.
+2. Open that repository in Google Antigravity and confirm the workspace MCP server is available.
+3. Run `/specify` for a change that needs an explicit specification.
+4. Use `/spec-plan`, `/spec-tasks`, and `/implement` to plan and execute the work.
+5. Run `/verify` and review the reported evidence.
+6. Refresh the graph with `buddhi generate` when project code changes.

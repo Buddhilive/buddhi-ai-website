@@ -20,10 +20,8 @@ import {Icon} from '@astrojs/starlight/components';
 
 		constructor() {
 			super();
-			// Toggle `aria-expanded` state when a user clicks the button.
 			this.btn.addEventListener('click', () => this.toggleExpanded());
 
-			// Close the menu when a user presses the escape key.
 			const parentNav = this.closest('nav');
 			if (parentNav) {
 				parentNav.addEventListener('keyup', (e) => this.closeOnEscape(e));
@@ -31,12 +29,12 @@ import {Icon} from '@astrojs/starlight/components';
 		}
 
 		setExpanded(expanded: boolean) {
-			this.setAttribute('aria-expanded', String(expanded));
+			this.btn.setAttribute('aria-expanded', String(expanded));
 			document.body.toggleAttribute('data-mobile-menu-expanded', expanded);
 		}
 
 		toggleExpanded() {
-			this.setExpanded(this.getAttribute('aria-expanded') !== 'true');
+			this.setExpanded(this.btn.getAttribute('aria-expanded') !== 'true');
 		}
 
 		closeOnEscape(e: KeyboardEvent) {
@@ -68,16 +66,16 @@ import {Icon} from '@astrojs/starlight/components';
 			cursor: pointer;
 		}
 
-		[aria-expanded='true'] button {
+		button[aria-expanded='true'] {
 			background-color: var(--sl-color-gray-2);
 			box-shadow: none;
 		}
 
-		[aria-expanded='true'] button .open-menu {
+		button[aria-expanded='true'] .open-menu {
 			display: none;
 		}
 
-		:not([aria-expanded='true']) button .close-menu {
+		button:not([aria-expanded='true']) .close-menu {
 			display: none;
 		}
 
@@ -86,7 +84,7 @@ import {Icon} from '@astrojs/starlight/components';
 			color: var(--sl-color-white);
 		}
 
-		:global([data-theme='light']) [aria-expanded='true'] button {
+		:global([data-theme='light']) button[aria-expanded='true'] {
 			background-color: var(--sl-color-gray-5);
 		}
 	}

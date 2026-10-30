@@ -1,0 +1,139 @@
+---
+title: "Install BuddhiAI CLI"
+description: "Install BuddhiAI CLI and its optional Model Context Protocol server."
+sidebar:
+  order: 2
+  label: "[rocket] Installation"
+---
+
+import { withBaseUrl } from "@/lib/utils/withBaseUrl";
+
+Install the `buddhi` command with Python 3.10 or newer. Include the `mcp` extra if you also need the `buddhi-mcp` server.
+
+---
+
+## Prerequisites
+
+- **Python**: Version **3.10** or higher is required.
+- **Package Manager**: One of `pip`, `pipx`, or `uv`.
+- **Operating System**: The package is OS independent.
+- **MCP server**: Install the `[mcp]` extra to use `buddhi-mcp`.
+
+Verify your Python version:
+
+```sh
+python --version
+# Output should show Python 3.10.x or higher
+```
+
+---
+
+## Installation Methods
+
+### Method 1: Using pip (Standard Installation)
+
+You can install BuddhiAI CLI directly using `pip`. Be sure to include the `[mcp]` extra to install the Model Context Protocol server components:
+
+```sh
+pip install "buddhi-ai[mcp]"
+```
+
+To upgrade an existing installation:
+
+```sh
+pip install --upgrade "buddhi-ai[mcp]"
+```
+
+---
+
+### Method 2: Using pipx (Isolated Tool Environment)
+
+If you prefer installing command-line tools in isolated virtual environments to prevent dependency conflicts across global packages:
+
+```sh
+pipx install "buddhi-ai[mcp]"
+```
+
+To upgrade via pipx:
+
+```sh
+pipx upgrade buddhi-ai
+```
+
+---
+
+### Method 3: Using uv
+
+If you use [Astral's `uv`](https://github.com/astral-sh/uv), install BuddhiAI CLI as an isolated tool:
+
+```sh
+uv tool install "buddhi-ai[mcp]"
+```
+
+To upgrade via uv:
+
+```sh
+uv tool upgrade buddhi-ai
+```
+
+---
+
+## Installed Binaries
+
+Installing with `[mcp]` provisions two primary executable binaries in your PATH:
+
+1. **`buddhi`**: The core command-line tool for project initialization, graph building, documentation planning, and Spec-Driven Development (SDD).
+2. **`buddhi-mcp`**: The standalone Stdio Model Context Protocol server entrypoint, allowing AI agents like Google Antigravity to interact with the code graph.
+
+---
+
+## Verifying Installation
+
+Verify that both commands are accessible in your terminal:
+
+```sh
+# Verify the CLI tool
+buddhi --help
+
+# Verify the MCP entrypoint
+buddhi-mcp --help
+```
+
+The help output lists the commands available in the installed version. For command details, see the <a href={withBaseUrl("/cli/commands/", import.meta.env.BASE_URL)}>CLI command reference</a>.
+
+---
+
+## Shell Auto-Completion
+
+BuddhiAI CLI supports auto-completion for popular shells (Bash, Zsh, Fish, PowerShell):
+
+```sh
+buddhi --install-completion
+```
+
+Follow the on-screen instructions to activate completion for your current shell.
+
+---
+
+## Troubleshooting
+
+### Command Not Found (`buddhi: command not found`)
+
+Ensure that Python's user bin directory is included in your system's `PATH` environment variable:
+
+- **macOS / Linux**: `~/.local/bin`
+- **Windows**: `%USERPROFILE%\AppData\Roaming\Python\Python3xx\Scripts` or `uv` tool path `%USERPROFILE%\.local\bin`
+
+### Windows PowerShell Encoding Issue
+
+When executing shell automation scripts on Windows, ensure your terminal processes UTF-8 correctly by setting:
+
+```powershell
+$env:PYTHONUTF8 = "1"
+```
+
+---
+
+## Next Steps
+
+Now that BuddhiAI CLI is installed, learn how to initialize your projects in the <a href={withBaseUrl("/cli/commands/", import.meta.env.BASE_URL)}>Commands Reference</a>.

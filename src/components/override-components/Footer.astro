@@ -1,16 +1,14 @@
 ---
-import config from "@/config/config.json";
-import social from "@/config/social.json";
-import { Icon } from "@astrojs/starlight/components";
+import config from "@/config/config.json" assert { type: "json" };
 import { markdownify } from "@/lib/utils/textConverter";
 import { getTranslations } from "@/lib/utils/languagePerser";
+import { withBaseUrl } from "@/lib/utils/withBaseUrl";
 
 const locale = Astro.currentLocale;
 
 const menu = await getTranslations(locale || "en");
 
 const footer = menu.footer;
-const currentLocal = Astro.currentLocale || "en";
 ---
 
 <footer>
@@ -23,7 +21,9 @@ const currentLocal = Astro.currentLocale || "en";
             <ul>
               {footer.community?.links.map((link: any) => (
                 <li>
-                  <a href={link.url}>{link.name}</a>
+                  <a href={withBaseUrl(link.url, import.meta.env.BASE_URL)}
+                    >{link.name}</a
+                  >
                 </li>
               ))}
             </ul>
@@ -37,7 +37,9 @@ const currentLocal = Astro.currentLocale || "en";
             <ul>
               {footer.help_links?.links.map((link: any) => (
                 <li>
-                  <a href={link.url}>{link.name}</a>
+                  <a href={withBaseUrl(link.url, import.meta.env.BASE_URL)}
+                    >{link.name}</a
+                  >
                 </li>
               ))}
             </ul>
@@ -51,7 +53,9 @@ const currentLocal = Astro.currentLocale || "en";
             <ul>
               {footer.company?.links.map((link: any) => (
                 <li>
-                  <a href={link.url}>{link.name}</a>
+                  <a href={withBaseUrl(link.url, import.meta.env.BASE_URL)}
+                    >{link.name}</a
+                  >
                 </li>
               ))}
             </ul>
@@ -59,59 +63,10 @@ const currentLocal = Astro.currentLocale || "en";
         )
       }
 
-      {
-        config?.params?.footer_contact?.enable && (
-          <div>
-            <h4>Connect With Us</h4>
-            <form
-              action={config?.params?.footer_contact?.action}
-              class="mail-form"
-            >
-              <input type="email" placeholder="Enter your email" required />
-              <button type="submit" aria-label="Submit email">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M21.0477 3.05293C18.8697 0.707361 2.48648 6.4532 2.50001 8.551C2.51535 10.9299 8.89809 11.6617 10.6672 12.1581C11.7311 12.4565 12.016 12.7625 12.2613 13.8781C13.3723 18.9305 13.9301 21.4435 15.2014 21.4996C17.2278 21.5892 23.1733 5.342 21.0477 3.05293Z"
-                    class="stroke-black dark:stroke-white"
-                    stroke-width="1.5"
-                  />
-                  <path
-                    d="M11.5 12.5L15 9"
-                    class="stroke-black dark:stroke-white"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-              </button>
-            </form>
-
-            <ul class="social-icons">
-              {social.main.map((item) => (
-                <li>
-                  <a href={item.href} aria-label={item.label}>
-                    <Icon
-                      name={item?.icon as any}
-                      color="var(--sl-color-white)"
-                      size="20px"
-                    />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )
-      }
     </div>
     <div class="bottom-footer">
       <p set:html={markdownify(config?.params?.copyright)} />
-      <a href={currentLocal + "/privacy-policy"}
+      <a href={withBaseUrl("/privacy-policy/", import.meta.env.BASE_URL)}
         >{Astro.locals.t("footer.privacy", "Privacy Policy")}</a
       >
     </div>
@@ -139,6 +94,9 @@ const currentLocal = Astro.currentLocale || "en";
       margin-bottom: 1.2rem;
     }
     .top-footer ul li a {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
       color: var(--sl-color-text);
       text-decoration: none;
       font-size: 1rem;
@@ -147,50 +105,6 @@ const currentLocal = Astro.currentLocale || "en";
     .top-footer ul li a:hover {
       color: var(--color-primary);
     }
-    .mail-form {
-      border: 1px solid var(--sl-color-gray-6);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-radius: 12px;
-      padding: 0.5rem 0.8rem;
-      background-color: var(--sl-color-black);
-    }
-    .mail-form input {
-      background-color: transparent;
-      width: 90%;
-    }
-    .mail-form input:focus {
-      outline: none;
-    }
-    .mail-form button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: transparent;
-      cursor: pointer;
-    }
-    .social-icons {
-      display: flex;
-      gap: 1rem;
-      margin-top: 2rem;
-      flex-wrap: wrap;
-    }
-    .social-icons li a {
-      background: color-mix(in srgb, var(--sl-color-gray-4) 20%, transparent);
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.6s ease;
-    }
-    .social-icons li a:hover {
-      background: var(--color-primary-gradient);
-      color: white !important;
-    }
-
     .bottom-footer {
       padding: 32px 0;
       border-top: 1px solid var(--sl-color-hairline);
@@ -201,6 +115,9 @@ const currentLocal = Astro.currentLocale || "en";
       gap: 1rem;
     }
     .bottom-footer a {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
       color: var(--sl-color-text);
       text-decoration: none;
       transition: color 0.3s ease;

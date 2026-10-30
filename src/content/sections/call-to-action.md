@@ -1,14 +1,12 @@
 ---
 title: |
-  Ready to explore <span class='light-text'>Dockit experience? </span>
-description: Discover tips, resources, and guidance to maximize experience with our documentation.
+  Set up <span class='light-text'>BuddhiAI CLI</span>
+description: Install the package, initialize a repository, and follow the CLI guide.
 enable: true
 fill_button:
   enable: true
-  label: Get Started
-  link: /getting-started/introduction/overview/
+  label: Install BuddhiAI CLI
+  link: /cli/installation/
 outline_button:
-  enable: true
-  label: View Docs
-  link: /getting-started/introduction/overview/
+  enable: false
 ---

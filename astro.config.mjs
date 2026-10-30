@@ -10,32 +10,52 @@ import locals from "./src/config/locals.json";
 import sidebar from "./src/config/sidebar.json";
 
 import { fileURLToPath } from "url";
+import { env } from "node:process";
 
 const { site } = config;
-const { title, logo, logo_darkmode } = site;
+const { title } = site;
+const isGitHubPages = env.ASTRO_DEPLOY_TARGET === "github-pages";
 
 export const locales = locals
 
 
 // https://astro.build/config
 export default defineConfig({
+  ...(isGitHubPages
+    ? {
+        site: "https://buddhilive.github.io",
+        base: "/buddhi-ai-website",
+        outDir: "./docs",
+      }
+    : {}),
   image: {
     service: { entrypoint: "astro/assets/services/noop" },
   },
   integrations: [
     starlight({
       title,
-      logo: {
-        light: logo,
-        dark: logo_darkmode,
-        alt: "BuddhiAI Logo",
-      },
-      favicon: "src/assets/favicon.ico",
+      favicon: "/favicon.ico",
       // @ts-ignore
       social: social.main || [],
       locales,
       sidebar: sidebar.main || [],
       customCss: ["./src/styles/global.css"],
+      head: [
+        {
+          tag: "script",
+          attrs: {
+            src: "https://www.googletagmanager.com/gtag/js?id=G-FBTRLM909R",
+            async: true,
+          },
+        },
+        {
+          tag: "script",
+          content: `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-FBTRLM909R');`,
+        },
+      ],
       components: {
         Head: "./src/components/override-components/Head.astro",
         Header: "./src/components/override-components/Header.astro",

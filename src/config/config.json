@@ -1,11 +1,9 @@
 {
   "site": {
-    "title": "BuddhiAI Documentation",
-    "logo": "/src/assets/logo.png",
-    "logo_darkmode": "/src/assets/logo.png",
-    "logo_width": "48",
-    "logo_height": "48",
-    "logo_text": "BuddhiAI"
+    "title": "BuddhiAI CLI",
+    "logo": "/buddhi-ai-logo.png",
+    "logo_width": 48,
+    "logo_height": 48
   },
 
   "settings": {
@@ -14,19 +12,12 @@
   },
 
   "params": {
-    "footer_contact": {
-      "enable": true,
-      "action": "#"
-    },
-    "copyright": "Copyright &copy; 2026. BuddhiAI"
+    "copyright": "BuddhiAI CLI"
   },
 
   "navigation_button": {
     "enable": true,
-    "label": "Get Started",
-    "translations": {
-      "fr": "Erste Schritte"
-    },
-    "link": "/getting-started/introduction/overview/"
+    "label": "Install BuddhiAI CLI",
+    "link": "/cli/installation/"
   }
 }

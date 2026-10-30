@@ -144,7 +144,7 @@ const { hasSidebar } = Astro.locals.starlightRoute;
       }
     }
 
-    :global([aria-expanded="true"]) ~ .sidebar-pane {
+    :global(body[data-mobile-menu-expanded]) .sidebar-pane {
       --sl-sidebar-visibility: visible;
     }
     .sidebar-content {

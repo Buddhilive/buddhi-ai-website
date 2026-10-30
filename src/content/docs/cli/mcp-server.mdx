@@ -1,0 +1,68 @@
+---
+title: MCP server and tools
+description: Connect an MCP client to BuddhiAI CLI and learn about its repository, memory, contrast, and accessibility tools.
+sidebar:
+  order: 6
+  label: MCP server and tools
+---
+
+import { withBaseUrl } from "@/lib/utils/withBaseUrl";
+
+BuddhiAI CLI includes an MCP server that communicates over stdio. Install the package with the `[mcp]` extra to install the `buddhi-mcp` entry point:
+
+```sh
+pip install "buddhi-ai[mcp]"
+```
+
+Start it from a project that has a generated graph:
+
+```sh
+buddhi mcp --root .
+```
+
+You can also run `buddhi-mcp --root .`. Pass `--db-path <path>` to select a graph database explicitly. The `--root` option anchors graph database lookup, relative paths, and repository searches to a project directory.
+
+## Antigravity configuration
+
+`buddhi init` creates `.agents/mcp_config.json` with the workspace server registration. Its command and arguments are:
+
+```json
+{
+  "mcpServers": {
+    "buddhi-mcp": {
+      "command": "buddhi-mcp",
+      "args": ["--root", "."]
+    }
+  }
+}
+```
+
+For other MCP clients, use their workspace configuration format to run `buddhi-mcp` with the project root. MCP server configuration differs by client.
+
+## Available tools
+
+### `buddhi_search`
+
+Searches the code graph using lexical anchors, then expands through graph relationships to find related symbols, callers, callees, and structural bridges. It filters repetitive or low-information snippets and orders results to keep important context visible within the response budget.
+
+### `buddhi_read`
+
+Reads a repository file with AST-aware compression and a token budget. The supported modes are `auto`, `signatures`, `map`, `entropy`, and `full`. Use `signatures` for declarations, `map` for a file outline, `entropy` for information-dense sections, and `full` when the entire file is needed. `auto` selects a representation based on the budget.
+
+### `buddhi_memory`
+
+Queries and reads structured project memory, captures a memory concept, and validates memory data. It supports path-scoped filtering and recursive `@path` imports up to five hops. The available memory operations also have CLI equivalents under <a href={withBaseUrl("/cli/memory/", import.meta.env.BASE_URL)}><code>buddhi memory</code></a>.
+
+### `check_contrast`
+
+Checks color pairs against WCAG 2.x contrast thresholds. The `buddhi scripts contrast` command provides corresponding CLI checks and stylesheet triage.
+
+### `verify_a11y`
+
+Runs the A11Y.md static verification gate against project source and accessibility release evidence. The CLI equivalent is `buddhi scripts verify-a11y`.
+
+## Keep the graph current
+
+The MCP tools query the generated graph. Run `buddhi generate` after code changes to refresh graph artifacts. `buddhi generate` does not refresh `.buddhi/docs-plan.json`; run `buddhi docs plan` when that plan also needs updating.
+
+For details on graph storage and analysis, see <a href={withBaseUrl("/cli/graph-analysis/", import.meta.env.BASE_URL)}>Graph analysis</a>. For the MCP tool's package requirements, see <a href={withBaseUrl("/cli/installation/", import.meta.env.BASE_URL)}>Installation</a>.

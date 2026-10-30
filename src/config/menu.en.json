@@ -5,90 +5,55 @@
       "url": "/"
     },
     {
-      "name": "Products",
-      "url": "",
-      "hasChildren": true,
-      "children": [
-        {
-          "name": "Web",
-          "url": "/web/"
-        },
-        {
-          "name": "CLI",
-          "url": "/cli/"
-        }
-      ]
+      "name": "CLI Guide",
+      "url": "/cli/"
     }
   ],
   "footer": {
     "community": {
-      "title": "Join Our Community",
+      "title": "BuddhiAI CLI",
       "links": [
         {
-          "name": "GitHub Discussions",
-          "url": "https://github.com/themefisher/dockit/discussions"
-        },
-        {
-          "name": "Discord Community",
-          "url": "/"
-        },
-        {
-          "name": "Twitter Updates",
-          "url": "/"
-        },
-        {
-          "name": "Contributing Guide",
-          "url": "/"
+          "name": "GitHub repository",
+          "url": "https://github.com/Buddhilive/buddhi-cli"
         }
       ]
     },
     "help_links": {
-      "title": "Helpful Links",
+      "title": "Documentation",
       "links": [
         {
-          "name": "Getting Started",
-          "url": "/"
+          "name": "CLI overview",
+          "url": "/cli/"
         },
         {
-          "name": "Privacy Policy",
-          "url": "/privacy-policy"
+          "name": "Installation",
+          "url": "/cli/installation/"
         },
         {
-          "name": "Terms and Conditions",
-          "url": "/terms-conditions"
+          "name": "Commands",
+          "url": "/cli/commands/"
         },
         {
-          "name": "About Us",
-          "url": "/about"
+          "name": "MCP server",
+          "url": "/cli/mcp-server/"
         },
         {
-          "name": "Troubleshooting",
-          "url": "/"
+          "name": "Agent harness",
+          "url": "/cli/agent-harness/"
         }
       ]
     },
     "company": {
-      "title": "Resources",
+      "title": "Project",
       "links": [
         {
-          "name": "Documentation Hub",
-          "url": "/docs/"
+          "name": "About BuddhiAI CLI",
+          "url": "/about/"
         },
         {
-          "name": "Theme Gallery",
-          "url": "/"
-        },
-        {
-          "name": "Best Practices",
-          "url": "/"
-        },
-        {
-          "name": "Performance Tips",
-          "url": "/"
-        },
-        {
-          "name": "Migration Guide",
-          "url": "/"
+          "name": "Terms and Conditions",
+          "url": "/terms-conditions/"
         }
       ]
     }

@@ -1,5 +1,202 @@
 [
   {
+    "node_id": "function:.agents/hooks/autoharness_hook.py::_resolve_project_root",
+    "kind": "function",
+    "name": "_resolve_project_root",
+    "qualified_name": "_resolve_project_root",
+    "file_path": ".agents/hooks/autoharness_hook.py",
+    "language": "python",
+    "start_line": 18,
+    "end_line": 24,
+    "snippet": "def _resolve_project_root() -> Path:\n    curr = Path.cwd().resolve()\n    while curr != curr.parent:\n        if (curr / \".agents\").is_dir() or (curr / \".git\").is_dir():\n            return curr\n        curr = curr.parent\n    return Path.cwd().resolve()",
+    "content_hash": "505105cd8e7e5c39cd40904adb777dc47c715b16888f1388abb49007da94d9c7",
+    "parent_id": "file:.agents/hooks/autoharness_hook.py",
+    "callers": [
+      "function:.agents/hooks/autoharness_hook.py::main"
+    ],
+    "callees": [],
+    "doc_path": ".buddhi/docs/.agents/hooks/autoharness_hook/resolve_project_root.md",
+    "needs_generation": true
+  },
+  {
+    "node_id": "function:.agents/hooks/autoharness_hook.py::handle_pre_tool_use",
+    "kind": "function",
+    "name": "handle_pre_tool_use",
+    "qualified_name": "handle_pre_tool_use",
+    "file_path": ".agents/hooks/autoharness_hook.py",
+    "language": "python",
+    "start_line": 106,
+    "end_line": 143,
+    "snippet": "def handle_pre_tool_use(root: Path, payload: dict) -> dict:\n    \"\"\"Handle PreToolUse: block child subagent direct writes and bump usage counters.\"\"\"\n    tool_call = payload.get(\"toolCall\", {})\n    tool_name = tool_call.get(\"name\", \"\")\n\n    # Child session write guard\n    is_child = os.environ.get(\"AUTOHARNESS_CHILD_SESSION\") == \"1\" or payload.get(\n        \"subagent\"\n    ) in (\"reflector\", \"curator\")\n    if is_child and tool_name in (\"write_file\", \"edit_file\", \"Write\", \"Edit\"):\n        return {\n            \"decision\": \"deny\",\n            \"reason\": \"AutoHarness reflection/curation subagents are read-only and must propose mutations via stage_skill.\",\n        }\n\n    # Usage tracking\n    args = tool_call.get(\"args\", {})\n    file_path = args.get(\"Path\", args.get(\"filepath\", args.get(\"file_path\", \"\")))\n    if file_path and \".agents/skills/\" in str(file_path).replace(\"\\\\\", \"/\"):\n        from buddhi.scripts.autoharness.layer import resolve_skills_dir\n        from buddhi.scripts.autoharness.sidecar import (\n            bump_sidecar_counter,\n            is_agent_created,\n        )\n\n        skills_dir = resolve_skills_dir(\"project\", root)\n        norm_p = Path(file_path)\n        try:\n            rel = norm_p.relative_to(skills_dir)\n            skill_name = rel.parts[0]\n            target_skill_dir = skills_dir / skill_name\n            if target_skill_dir.is_dir() and is_agent_created(target_skill_dir):\n                counter = \"use\" if rel.name == \"SKILL.md\" else \"view\"\n                bump_sidecar_counter(target_skill_dir, counter)\n        except (OSError, ValueError):\n            pass\n\n    return {\"decision\": \"allow\"}",
+    "content_hash": "f5e190eda1eae3827da8ad3ddd6a535d44fd331ac8dbcc7078c15941772cd6de",
+    "parent_id": "file:.agents/hooks/autoharness_hook.py",
+    "callers": [
+      "function:.agents/hooks/autoharness_hook.py::main"
+    ],
+    "callees": [],
+    "doc_path": ".buddhi/docs/.agents/hooks/autoharness_hook/handle_pre_tool_use.md",
+    "needs_generation": true
+  },
+  {
+    "node_id": "function:.agents/hooks/autoharness_hook.py::handle_session_start",
+    "kind": "function",
+    "name": "handle_session_start",
+    "qualified_name": "handle_session_start",
+    "file_path": ".agents/hooks/autoharness_hook.py",
+    "language": "python",
+    "start_line": 27,
+    "end_line": 103,
+    "snippet": "def handle_session_start(root: Path, payload: dict) -> dict:\n    \"\"\"Handle SessionStart event: run lifecycle evaluation and inject skill recall index.\"\"\"\n    from buddhi.scripts.autoharness.layer import (\n        resolve_autoharness_dir,\n        resolve_skills_dir,\n    )\n    from buddhi.scripts.autoharness.lifecycle import evaluate_lifecycle\n    from buddhi.scripts.autoharness.sidecar import is_agent_created, read_sidecar\n    from buddhi.scripts.autoharness.skill_store import archive_skill\n    from buddhi.scripts.autoharness.validate import parse_frontmatter\n\n    skills_dir = resolve_skills_dir(\"project\", root)\n    if not skills_dir.is_dir():\n        return {}\n\n    # Read active agent skills\n    agent_skills = {}\n    for item in skills_dir.iterdir():\n        if item.is_dir() and is_agent_created(item):\n            sc = read_sidecar(item)\n            if sc:\n                agent_skills[item.name] = sc\n\n    # Evaluate lifecycle\n    decision = evaluate_lifecycle(\n        agent_skills, current_request_count=100, layer=\"project\"\n    )\n    for arch in decision.archive:\n        try:\n            archive_skill(skills_dir, arch)\n        except OSError:\n            pass\n\n    # Build recall index\n    categories: dict[str, list[str]] = {}\n    for name in decision.keep:\n        s_file = skills_dir / name / \"SKILL.md\"\n        if s_file.is_file():\n            try:\n                fm, _ = parse_frontmatter(s_file.read_text(encoding=\"utf-8\"))\n                cat = fm.get(\"category\", \"general\")\n                desc = fm.get(\"description\", \"\")[:60]\n                categories.setdefault(cat, []).append(f\"- {name} [project]: {desc}\")\n            except (OSError, ValueError):\n                pass\n\n    index_lines = [\"[AutoHarness] Active Self-Learned Skills:\"]\n    for cat, items in sorted(categories.items()):\n        index_lines.append(f\"## {cat}\")\n        index_lines.extend(items)\n\n    index_text = \"\\n\".join(index_lines)\n\n    # Consume last_run.json if present\n    autoharness_dir = resolve_autoharness_dir(\"project\", root)\n    last_run_file = autoharness_dir / \"last_run.json\"\n    last_run_summary = \"\"\n    if last_run_file.is_file():\n        try:\n            data = json.loads(last_run_file.read_text(encoding=\"utf-8\"))\n            landed = len(data.get(\"landed\", []))\n            rejected = len(data.get(\"rejected\", []))\n            last_run_summary = f\"[AutoHarness] Last promotion: landed {landed}, rejected {rejected} skills.\"\n        except (OSError, json.JSONDecodeError):\n            pass\n\n    messages = []\n    if last_run_summary:\n        messages.append(last_run_summary)\n    if len(categories) > 0:\n        messages.append(index_text)\n\n    if messages:\n        return {\n            \"injectSteps\": [{\"systemMessage\": {\"systemMessage\": \"\\n\\n\".join(messages)}}]\n        }\n    return {}",
+    "content_hash": "ff306d02c56f9a6794a6afbc2479540e6c52e6fbf56f0bec5ce1ecfc1209bfe5",
+    "parent_id": "file:.agents/hooks/autoharness_hook.py",
+    "callers": [
+      "function:.agents/hooks/autoharness_hook.py::main"
+    ],
+    "callees": [],
+    "doc_path": ".buddhi/docs/.agents/hooks/autoharness_hook/handle_session_start.md",
+    "needs_generation": true
+  },
+  {
+    "node_id": "function:.agents/hooks/autoharness_hook.py::handle_stop",
+    "kind": "function",
+    "name": "handle_stop",
+    "qualified_name": "handle_stop",
+    "file_path": ".agents/hooks/autoharness_hook.py",
+    "language": "python",
+    "start_line": 146,
+    "end_line": 155,
+    "snippet": "def handle_stop(root: Path, payload: dict) -> dict:\n    \"\"\"Handle Stop event: drain interactive intents and notify if thresholds reached.\"\"\"\n    from buddhi.scripts.autoharness.promoter import drain_and_promote\n\n    try:\n        drain_and_promote(layer=\"project\", run_id=\"interactive\", project_root=root)\n    except (OSError, ValueError):\n        pass\n\n    return {}",
+    "content_hash": "c75f2225e623e0f3531329bd88ef2a56c68b09c3b684512f48869c5f03dccf8b",
+    "parent_id": "file:.agents/hooks/autoharness_hook.py",
+    "callers": [
+      "function:.agents/hooks/autoharness_hook.py::main"
+    ],
+    "callees": [],
+    "doc_path": ".buddhi/docs/.agents/hooks/autoharness_hook/handle_stop.md",
+    "needs_generation": true
+  },
+  {
+    "node_id": "function:.agents/hooks/autoharness_hook.py::main",
+    "kind": "function",
+    "name": "main",
+    "qualified_name": "main",
+    "file_path": ".agents/hooks/autoharness_hook.py",
+    "language": "python",
+    "start_line": 158,
+    "end_line": 187,
+    "snippet": "def main() -> None:\n    try:\n        raw = sys.stdin.read(262144)\n        payload = json.loads(raw) if raw.strip() else {}\n    except (OSError, json.JSONDecodeError):\n        payload = {}\n\n    root = _resolve_project_root()\n    res: dict = {}\n\n    try:\n        # Detect event type\n        if (\n            \"conversationId\" in payload\n            and \"toolCall\" not in payload\n            and \"terminationReason\" not in payload\n        ):\n            res = handle_session_start(root, payload)\n        elif \"toolCall\" in payload:\n            res = handle_pre_tool_use(root, payload)\n        elif \"terminationReason\" in payload or \"executionNum\" in payload:\n            res = handle_stop(root, payload)\n        else:\n            # Fallback\n            res = {\"decision\": \"allow\"}\n    except (OSError, ValueError):\n        # Fail open\n        res = {\"decision\": \"allow\"}\n\n    print(json.dumps(res))",
+    "content_hash": "7cbce697c5c4671ef7ee356284f7e4e5b988fb7411fa1cd38486fb92bc279f39",
+    "parent_id": "file:.agents/hooks/autoharness_hook.py",
+    "callers": [],
+    "callees": [
+      "function:.agents/hooks/autoharness_hook.py::_resolve_project_root",
+      "function:.agents/hooks/autoharness_hook.py::handle_pre_tool_use",
+      "function:.agents/hooks/autoharness_hook.py::handle_session_start",
+      "function:.agents/hooks/autoharness_hook.py::handle_stop"
+    ],
+    "doc_path": ".buddhi/docs/.agents/hooks/autoharness_hook/main.md",
+    "needs_generation": true
+  },
+  {
+    "node_id": "function:.agents/hooks/graph_context.py::_extract_target_file",
+    "kind": "function",
+    "name": "_extract_target_file",
+    "qualified_name": "_extract_target_file",
+    "file_path": ".agents/hooks/graph_context.py",
+    "language": "python",
+    "start_line": 68,
+    "end_line": 110,
+    "snippet": "def _extract_target_file(payload: dict, root: Path) -> str | None:\n    candidates: list[str] = []\n    for key in (\n        \"file_path\",\n        \"filepath\",\n        \"AbsolutePath\",\n        \"TargetFile\",\n        \"path\",\n        \"SearchPath\",\n    ):\n        val = payload.get(key)\n        if isinstance(val, str):\n            candidates.append(val)\n\n    for outer in (\"input\", \"tool_input\", \"parameters\"):\n        inner_obj = payload.get(outer)\n        if isinstance(inner_obj, dict):\n            for key in (\n                \"file_path\",\n                \"filepath\",\n                \"AbsolutePath\",\n                \"TargetFile\",\n                \"path\",\n                \"SearchPath\",\n            ):\n                val = inner_obj.get(key)\n                if isinstance(val, str):\n                    candidates.append(val)\n\n    for raw in candidates:\n        norm = raw.replace(\"\\\\\", \"/\").strip()\n        try:\n            cand_p = (root / norm).resolve()\n            if cand_p.is_relative_to(root):\n                rel = cand_p.relative_to(root).as_posix()\n                if not any(\n                    rel.startswith(ex)\n                    for ex in (\".git/\", \".buddhi/\", \".venv/\", \"node_modules/\", \"temp/\")\n                ):\n                    return rel\n        except (ValueError, OSError):\n            continue\n    return None",
+    "content_hash": "d35ff97bb4ca93cf0a2201e52718b45af393f4c08c96e6f2c37450e7ffaab56e",
+    "parent_id": "file:.agents/hooks/graph_context.py",
+    "callers": [
+      "function:.agents/hooks/graph_context.py::_handle_pre_tool_use"
+    ],
+    "callees": [],
+    "doc_path": ".buddhi/docs/.agents/hooks/graph_context/extract_target_file.md",
+    "needs_generation": true
+  },
+  {
+    "node_id": "function:.agents/hooks/graph_context.py::_handle_pre_tool_use",
+    "kind": "function",
+    "name": "_handle_pre_tool_use",
+    "qualified_name": "_handle_pre_tool_use",
+    "file_path": ".agents/hooks/graph_context.py",
+    "language": "python",
+    "start_line": 113,
+    "end_line": 155,
+    "snippet": "def _handle_pre_tool_use(root: Path, db_path: Path | None, payload: dict) -> dict:\n    target_rel = _extract_target_file(payload, root)\n    if not target_rel or not db_path:\n        return {\"decision\": \"allow\"}\n\n    try:\n        conn = sqlite3.connect(\n            f\"file:{db_path.as_posix()}?mode=ro\", uri=True, timeout=0.03\n        )\n        try:\n            cur = conn.cursor()\n            cur.execute(\n                \"\"\"\n                SELECT\n                    n.name, n.kind, n.community_id, c.label, c.cohesion,\n                    (SELECT COUNT(*) FROM edges e WHERE e.target_id = n.id AND e.kind IN ('calls', 'inherits')) AS in_deg,\n                    (SELECT COUNT(*) FROM edges e WHERE e.source_id = n.id AND e.kind IN ('calls', 'inherits')) AS out_deg\n                FROM nodes n\n                LEFT JOIN communities c ON c.id = n.community_id\n                WHERE n.file_path = ? AND n.kind IN ('class', 'function', 'method')\n                ORDER BY in_deg DESC, n.start_line ASC\n                LIMIT 8\n                \"\"\",\n                (target_rel,),\n            )\n            rows = cur.fetchall()\n            if not rows:\n                return {\"decision\": \"allow\"}\n\n            comm_label = (\n                rows[0][3] or f\"Community {rows[0][2]}\"\n                if rows[0][2] is not None\n                else \"unclustered\"\n            )\n            cohesion = rows[0][4] if rows[0][4] is not None else 0.0\n            top_symbols = [f\"{r[0]} ({r[1]}, in:{r[5]}, out:{r[6]})\" for r in rows[:4]]\n\n            hint = f\"[Buddhi Graph] {target_rel}: {len(rows)} symbols | Community: '{comm_label}' (cohesion {cohesion}) | Symbols: {', '.join(top_symbols)}\"\n            return {\"decision\": \"allow\", \"additionalContext\": hint}\n        finally:\n            conn.close()\n    except (sqlite3.Error, OSError):\n        return {\"decision\": \"allow\"}",
+    "content_hash": "d26119d9fe6e0967ff34176ea3d634507ce554353a8228a20878500757803c66",
+    "parent_id": "file:.agents/hooks/graph_context.py",
+    "callers": [
+      "function:.agents/hooks/graph_context.py::main"
+    ],
+    "callees": [
+      "function:.agents/hooks/graph_context.py::_extract_target_file"
+    ],
+    "doc_path": ".buddhi/docs/.agents/hooks/graph_context/handle_pre_tool_use.md",
+    "needs_generation": true
+  },
+  {
+    "node_id": "function:.agents/hooks/graph_context.py::_handle_session_start",
+    "kind": "function",
+    "name": "_handle_session_start",
+    "qualified_name": "_handle_session_start",
+    "file_path": ".agents/hooks/graph_context.py",
+    "language": "python",
+    "start_line": 22,
+    "end_line": 65,
+    "snippet": "def _handle_session_start(root: Path, db_path: Path | None) -> dict:\n    if not db_path:\n        return {}\n\n    built_commit: str | None = None\n    try:\n        conn = sqlite3.connect(\n            f\"file:{db_path.as_posix()}?mode=ro\", uri=True, timeout=0.03\n        )\n        try:\n            cur = conn.cursor()\n            cur.execute(\"SELECT value FROM meta WHERE key = 'built_at_commit'\")\n            row = cur.fetchone()\n            if row and row[0]:\n                built_commit = row[0]\n        finally:\n            conn.close()\n    except (sqlite3.Error, OSError):\n        return {}\n\n    if not built_commit:\n        return {}\n\n    # Check git HEAD\n    git_head: str | None = None\n    git_head_file = root / \".git\" / \"HEAD\"\n    if git_head_file.is_file():\n        try:\n            head_content = git_head_file.read_text(encoding=\"utf-8\").strip()\n            if not head_content.startswith(\"ref:\"):\n                git_head = head_content\n            else:\n                ref_file = root / \".git\" / head_content[4:].strip()\n                if ref_file.is_file():\n                    git_head = ref_file.read_text(encoding=\"utf-8\").strip()\n        except OSError:\n            pass\n\n    if git_head and built_commit != git_head:\n        return {\n            \"additionalContext\": f\"[Buddhi Graph] tree-graph.db was built at commit {built_commit[:8]} (HEAD is {git_head[:8]}). Consider running `buddhi generate` to refresh.\"\n        }\n\n    return {}",
+    "content_hash": "76535843708b7c0f5d03d26cd660ceafd9d542e3f2b861100e088eb2c4eb6dfa",
+    "parent_id": "file:.agents/hooks/graph_context.py",
+    "callers": [
+      "function:.agents/hooks/graph_context.py::main"
+    ],
+    "callees": [],
+    "doc_path": ".buddhi/docs/.agents/hooks/graph_context/handle_session_start.md",
+    "needs_generation": true
+  },
+  {
+    "node_id": "function:.agents/hooks/graph_context.py::_resolve_db_path",
+    "kind": "function",
+    "name": "_resolve_db_path",
+    "qualified_name": "_resolve_db_path",
+    "file_path": ".agents/hooks/graph_context.py",
+    "language": "python",
+    "start_line": 17,
+    "end_line": 19,
+    "snippet": "def _resolve_db_path(root: Path) -> Path | None:\n    candidate = root / \".buddhi\" / \"graphs\" / \"tree-graph.db\"\n    return candidate if candidate.is_file() else None",
+    "content_hash": "8357e5ce06304b5c74acd214ad19569ffbdaabf56c03da29abaaf62d9e169ca0",
+    "parent_id": "file:.agents/hooks/graph_context.py",
+    "callers": [
+      "function:.agents/hooks/graph_context.py::main"
+    ],
+    "callees": [],
+    "doc_path": ".buddhi/docs/.agents/hooks/graph_context/resolve_db_path.md",
+    "needs_generation": true
+  },
+  {
+    "node_id": "function:.agents/hooks/graph_context.py::main",
+    "kind": "function",
+    "name": "main",
+    "qualified_name": "main",
+    "file_path": ".agents/hooks/graph_context.py",
+    "language": "python",
+    "start_line": 158,
+    "end_line": 179,
+    "snippet": "def main() -> None:\n    try:\n        raw = sys.stdin.read(262144)\n        payload = json.loads(raw) if raw.strip() else {}\n    except (json.JSONDecodeError, OSError, ValueError):\n        payload = {}\n\n    root = Path.cwd().resolve()\n    db_path = _resolve_db_path(root)\n\n    # Detect if SessionStart or PreToolUse\n    event_name = payload.get(\"hook_event_name\", \"\")\n    if (\n        event_name == \"SessionStart\"\n        or \"session_id\" in payload\n        and \"tool_name\" not in payload\n    ):\n        res = _handle_session_start(root, db_path)\n    else:\n        res = _handle_pre_tool_use(root, db_path, payload)\n\n    print(json.dumps(res))",
+    "content_hash": "0627cdcfc8496a17f677b920cd12188fc6a5c8f8ded772e755bae62ff9dac5b8",
+    "parent_id": "file:.agents/hooks/graph_context.py",
+    "callers": [],
+    "callees": [
+      "function:.agents/hooks/graph_context.py::_handle_pre_tool_use",
+      "function:.agents/hooks/graph_context.py::_handle_session_start",
+      "function:.agents/hooks/graph_context.py::_resolve_db_path"
+    ],
+    "doc_path": ".buddhi/docs/.agents/hooks/graph_context/main.md",
+    "needs_generation": true
+  },
+  {
     "node_id": "function:.agents/hooks/guard_destructive.py::extract_command",
     "kind": "function",
     "name": "extract_command",
@@ -8,8 +205,8 @@
     "language": "python",
     "start_line": 88,
     "end_line": 121,
-    "snippet": "def extract_command(payload):\n    \"\"\"Pull the shell command string out of a tool-call payload, if any.\n\n    The field holding the command text varies by tool/hook shape, so check\n    a few known locations in order. This hook only ever backstops\n    shell/terminal-command-shaped tool calls (run_command, git-specialist\n    shells out, etc.) \u2014 if none of those fields are present (or the payload\n    isn't a dict), this is not a command invocation at all (e.g. a Write/Edit\n    of file content), and there is nothing to safely pattern-match against:\n    return None rather than stringifying the whole payload, which would\n    otherwise deny file writes whose *content* merely mentions a destructive\n    command (including this harness's own rule docs).\n    \"\"\"\n    if isinstance(payload, dict):\n        for key in (\"command\", \"cmd\"):\n            value = payload.get(key)\n            if isinstance(value, str):\n                return value\n\n        for outer_key, inner_key in (\n            (\"input\", \"command\"),\n            (\"tool_input\", \"command\"),\n            (\"parameters\", \"command\"),\n            (\"input\", \"cmd\"),\n            (\"tool_input\", \"cmd\"),\n            (\"parameters\", \"cmd\"),\n        ):\n            outer = payload.get(outer_key)\n            if isinstance(outer, dict):\n                inner = outer.get(inner_key)\n                if isinstance(inner, str):\n                    return inner\n\n    return None",
-    "content_hash": "2ab0f43d754a4ad035b45eacec41f7d4ea720a0b2a43714ae3331205d64ef141",
+    "snippet": "def extract_command(payload):\r\n    \"\"\"Pull the shell command string out of a tool-call payload, if any.\r\n\r\n    The field holding the command text varies by tool/hook shape, so check\r\n    a few known locations in order. This hook only ever backstops\r\n    shell/terminal-command-shaped tool calls (run_command, git-specialist\r\n    shells out, etc.) \u2014 if none of those fields are present (or the payload\r\n    isn't a dict), this is not a command invocation at all (e.g. a Write/Edit\r\n    of file content), and there is nothing to safely pattern-match against:\r\n    return None rather than stringifying the whole payload, which would\r\n    otherwise deny file writes whose *content* merely mentions a destructive\r\n    command (including this harness's own rule docs).\r\n    \"\"\"\r\n    if isinstance(payload, dict):\r\n        for key in (\"command\", \"cmd\"):\r\n            value = payload.get(key)\r\n            if isinstance(value, str):\r\n                return value\r\n\r\n        for outer_key, inner_key in (\r\n            (\"input\", \"command\"),\r\n            (\"tool_input\", \"command\"),\r\n            (\"parameters\", \"command\"),\r\n            (\"input\", \"cmd\"),\r\n            (\"tool_input\", \"cmd\"),\r\n            (\"parameters\", \"cmd\"),\r\n        ):\r\n            outer = payload.get(outer_key)\r\n            if isinstance(outer, dict):\r\n                inner = outer.get(inner_key)\r\n                if isinstance(inner, str):\r\n                    return inner\r\n\r\n    return None",
+    "content_hash": "f1b2308567322b32d1e298622c0be23e5974ef9953ad745f768912e6d0781477",
     "parent_id": "file:.agents/hooks/guard_destructive.py",
     "callers": [
       "function:.agents/hooks/guard_destructive.py::decide"
@@ -27,8 +224,8 @@
     "language": "python",
     "start_line": 124,
     "end_line": 138,
-    "snippet": "def decide(payload):\n    command = extract_command(payload)\n    if command is None:\n        # Not a shell/terminal-command-shaped tool call \u2014 nothing to check,\n        # so fail open rather than scanning unrelated payloads (file content,\n        # etc.) against command deny-patterns.\n        return {\"decision\": \"allow\"}\n\n    for pattern, reason, confirmable in DENY_RULES:\n        if pattern.search(command):\n            if confirmable and CONFIRMED_MARKER in command:\n                continue\n            return {\"decision\": \"deny\", \"reason\": reason}\n\n    return {\"decision\": \"allow\"}",
-    "content_hash": "6e931688b52557d482090c1726920914bd66b62d79cba667b86e3d3fe55cc009",
+    "snippet": "def decide(payload):\r\n    command = extract_command(payload)\r\n    if command is None:\r\n        # Not a shell/terminal-command-shaped tool call \u2014 nothing to check,\r\n        # so fail open rather than scanning unrelated payloads (file content,\r\n        # etc.) against command deny-patterns.\r\n        return {\"decision\": \"allow\"}\r\n\r\n    for pattern, reason, confirmable in DENY_RULES:\r\n        if pattern.search(command):\r\n            if confirmable and CONFIRMED_MARKER in command:\r\n                continue\r\n            return {\"decision\": \"deny\", \"reason\": reason}\r\n\r\n    return {\"decision\": \"allow\"}",
+    "content_hash": "576d5331f9fa9bca111e028f1da3cd6a626832b03b681c89254506129b36c998",
     "parent_id": "file:.agents/hooks/guard_destructive.py",
     "callers": [
       "function:.agents/hooks/guard_destructive.py::main"
@@ -48,14 +245,65 @@
     "language": "python",
     "start_line": 141,
     "end_line": 151,
-    "snippet": "def main():\n    try:\n        raw = sys.stdin.read()\n        payload = json.loads(raw)\n        result = decide(payload)\n    except Exception:  # noqa: BLE001 - must never block tool use on this hook's own bugs\n        # Never block tool use because this hook itself is broken or the\n        # input was malformed/non-JSON.\n        result = {\"decision\": \"allow\"}\n\n    print(json.dumps(result))",
-    "content_hash": "50e43ce8faa5abf53d410b09440fe1da60c0d32813d5c9991b38310f10e56c70",
+    "snippet": "def main():\r\n    try:\r\n        raw = sys.stdin.read()\r\n        payload = json.loads(raw)\r\n        result = decide(payload)\r\n    except Exception:  # noqa: BLE001 - must never block tool use on this hook's own bugs\r\n        # Never block tool use because this hook itself is broken or the\r\n        # input was malformed/non-JSON.\r\n        result = {\"decision\": \"allow\"}\r\n\r\n    print(json.dumps(result))",
+    "content_hash": "4b173a5854e146a34f055195da3f12ebc3af3669b16babe9e92c27dfd6570ebd",
     "parent_id": "file:.agents/hooks/guard_destructive.py",
     "callers": [],
     "callees": [
       "function:.agents/hooks/guard_destructive.py::decide"
     ],
     "doc_path": ".buddhi/docs/.agents/hooks/guard_destructive/main.md",
+    "needs_generation": true
+  },
+  {
+    "node_id": "function:.agents/hooks/rtk_hook.py::main",
+    "kind": "function",
+    "name": "main",
+    "qualified_name": "main",
+    "file_path": ".agents/hooks/rtk_hook.py",
+    "language": "python",
+    "start_line": 22,
+    "end_line": 36,
+    "snippet": "def main() -> None:\r\n    try:\r\n        raw_input = sys.stdin.read()\r\n        if not raw_input.strip():\r\n            print(json.dumps({}))\r\n            return\r\n\r\n        payload = json.loads(raw_input)\r\n        from buddhi.scripts.rtk.hook_handler import handle_hook_payload\r\n\r\n        response = handle_hook_payload(payload)\r\n        print(json.dumps(response))\r\n    except Exception:  # noqa: BLE001 - must never block tool use on this hook's own bugs\r\n        # Strict fail-open: Never break tool execution on hook failure\r\n        print(json.dumps({}))",
+    "content_hash": "32a8d59c9dba0acdddaa7dced3ecaa58c843fb1af19ff8da93431bb46d3bdef1",
+    "parent_id": "file:.agents/hooks/rtk_hook.py",
+    "callers": [],
+    "callees": [],
+    "doc_path": ".buddhi/docs/.agents/hooks/rtk_hook/main.md",
+    "needs_generation": true
+  },
+  {
+    "node_id": "function:.agents/skills/agents-md/scripts/detect_agents_md.py::main",
+    "kind": "function",
+    "name": "main",
+    "qualified_name": "main",
+    "file_path": ".agents/skills/agents-md/scripts/detect_agents_md.py",
+    "language": "python",
+    "start_line": 39,
+    "end_line": 165,
+    "snippet": "def main() -> int:\n    parser = argparse.ArgumentParser(\n        description=\"Inspect repository facts and create or update AGENTS.md.\"\n    )\n    parser.add_argument(\n        \"--root\",\n        \"-r\",\n        type=Path,\n        default=Path(\".\"),\n        help=\"Project root directory (default: current directory).\",\n    )\n    parser.add_argument(\n        \"--diff\",\n        \"-d\",\n        action=\"store_true\",\n        help=\"Display unified diff against existing AGENTS.md without modifying it.\",\n    )\n    parser.add_argument(\n        \"--apply\",\n        \"-a\",\n        action=\"store_true\",\n        help=\"Apply changes and write AGENTS.md directly.\",\n    )\n    parser.add_argument(\n        \"--json\",\n        \"-j\",\n        action=\"store_true\",\n        help=\"Output detected facts and merge results as JSON.\",\n    )\n\n    args = parser.parse_args()\n    root = args.root.resolve()\n\n    if not root.is_dir():\n        print(f\"Error: target root '{root}' is not a directory.\", file=sys.stderr)\n        return 1\n\n    agents_md_path = root / \"AGENTS.md\"\n    facts = detect_repo_facts(root)\n\n    existing_content = \"\"\n    is_new = not agents_md_path.is_file()\n    if not is_new:\n        try:\n            existing_content = agents_md_path.read_text(encoding=\"utf-8\")\n        except OSError as exc:\n            print(f\"Error reading {agents_md_path}: {exc}\", file=sys.stderr)\n            return 1\n\n    if is_new:\n        generated_content = generate_agents_md(facts)\n        has_changes = True\n        diff_output = diff_agents_md(\"\", generated_content)\n        updated_sections = [\n            \"# AGENTS.md\",\n            \"## Commands\",\n            \"## Agent Conventions & Skills\",\n        ]\n        preserved_sections: list[str] = []\n        final_content = generated_content\n    else:\n        merge_res = merge_agents_md(existing_content, facts)\n        has_changes = merge_res.has_changes\n        diff_output = merge_res.diff\n        updated_sections = merge_res.updated_sections\n        preserved_sections = merge_res.preserved_sections\n        final_content = merge_res.content\n\n    if args.json:\n        payload = {\n            \"root\": str(root),\n            \"is_new\": is_new,\n            \"has_changes\": has_changes,\n            \"facts\": {\n                \"name\": facts.name,\n                \"description\": facts.description,\n                \"primary_language\": facts.primary_language,\n                \"commands\": facts.commands.as_dict(),\n                \"skills\": facts.skills,\n                \"has_rules\": facts.has_rules,\n                \"has_buddhi_docs\": facts.has_buddhi_docs,\n            },\n            \"updated_sections\": updated_sections,\n            \"preserved_sections\": preserved_sections,\n            \"diff\": diff_output,\n        }\n        print(json.dumps(payload, indent=2))\n        return 0\n\n    if args.apply:\n        try:\n            agents_md_path.write_text(final_content, encoding=\"utf-8\")\n            status_str = \"Created\" if is_new else \"Updated\"\n            print(f\"{status_str} {agents_md_path} successfully.\")\n            return 0\n        except OSError as exc:\n            print(f\"Error writing {agents_md_path}: {exc}\", file=sys.stderr)\n            return 1\n\n    if args.diff:\n        if is_new:\n            print(f\"--- /dev/null\\n+++ {agents_md_path}\\n\")\n            print(final_content)\n        elif has_changes:\n            print(diff_output)\n        else:\n            print(\"AGENTS.md is up-to-date. Zero changes needed.\")\n        return 0\n\n    # Default summary mode\n    print(f\"Target: {root}\")\n    print(f\"Primary Language: {facts.primary_language}\")\n    print(\"Commands Detected:\")\n    for k, v in facts.commands.as_dict().items():\n        if v:\n            print(f\"  - {k.capitalize()}: {v}\")\n    if is_new:\n        print(\n            \"\\nAGENTS.md does not exist. Run with --apply to create it, or --diff to preview.\"\n        )\n    elif has_changes:\n        print(\n            \"\\nChanges detected in AGENTS.md. Run with --diff to inspect, or --apply to update.\"\n        )\n \n\u2026 (truncated)",
+    "content_hash": "071cbd34a074fc894f1075c3f357179bcf58a6530cb00a490169335303ae26c2",
+    "parent_id": "file:.agents/skills/agents-md/scripts/detect_agents_md.py",
+    "callers": [],
+    "callees": [],
+    "doc_path": ".buddhi/docs/.agents/skills/agents-md/scripts/detect_agents_md/main.md",
+    "needs_generation": true
+  },
+  {
+    "node_id": "function:.agents/skills/design-md/scripts/detect_design_md.py::main",
+    "kind": "function",
+    "name": "main",
+    "qualified_name": "main",
+    "file_path": ".agents/skills/design-md/scripts/detect_design_md.py",
+    "language": "python",
+    "start_line": 41,
+    "end_line": 220,
+    "snippet": "def main() -> int:\n    parser = argparse.ArgumentParser(\n        description=\"Inspect repository facts, create or update DESIGN.md, and run WCAG contrast linting.\"\n    )\n    parser.add_argument(\n        \"--root\",\n        \"-r\",\n        type=Path,\n        default=Path(\".\"),\n        help=\"Project root directory (default: current directory).\",\n    )\n    parser.add_argument(\n        \"--diff\",\n        \"-d\",\n        action=\"store_true\",\n        help=\"Display unified diff against existing DESIGN.md without modifying it.\",\n    )\n    parser.add_argument(\n        \"--apply\",\n        \"-a\",\n        action=\"store_true\",\n        help=\"Apply changes and write DESIGN.md directly to project root.\",\n    )\n    parser.add_argument(\n        \"--lint\",\n        \"-l\",\n        action=\"store_true\",\n        help=\"Validate DESIGN.md structure and run WCAG 2.2 AA color contrast checks.\",\n    )\n    parser.add_argument(\n        \"--json\",\n        \"-j\",\n        action=\"store_true\",\n        help=\"Output detected facts, tokens, and lint results as structured JSON.\",\n    )\n    parser.add_argument(\n        \"--aesthetic\",\n        \"-e\",\n        type=str,\n        default=None,\n        help=\"Custom vivid aesthetic direction prose description for ## Overview.\",\n    )\n\n    args = parser.parse_args()\n    root = args.root.resolve()\n\n    if not root.is_dir():\n        print(f\"Error: target root '{root}' is not a directory.\", file=sys.stderr)\n        return 1\n\n    design_md_path = root / \"DESIGN.md\"\n    facts = detect_design_facts(root)\n\n    existing_content = \"\"\n    is_new = not design_md_path.is_file()\n    if not is_new:\n        try:\n            existing_content = design_md_path.read_text(encoding=\"utf-8\")\n        except OSError as exc:\n            print(f\"Error reading {design_md_path}: {exc}\", file=sys.stderr)\n            return 1\n\n    if is_new:\n        generated_content = generate_design_md(facts, aesthetic=args.aesthetic)\n        has_changes = True\n        diff_output = diff_design_md(\"\", generated_content)\n        updated_sections = [\"All sections (new file)\"]\n        preserved_sections: list[str] = []\n        final_content = generated_content\n    else:\n        merge_res = merge_design_md(existing_content, facts, aesthetic=args.aesthetic)\n        has_changes = merge_res.has_changes\n        diff_output = merge_res.diff\n        updated_sections = merge_res.updated_sections\n        preserved_sections = merge_res.preserved_sections\n        final_content = merge_res.content\n\n    # If --lint is requested, validate final content (or existing file)\n    lint_report = lint_design_md(\n        existing_content\n        if (args.lint and not args.apply and not is_new)\n        else final_content\n    )\n\n    if args.json:\n        payload = {\n            \"root\": str(root),\n            \"is_new\": is_new,\n            \"has_changes\": has_changes,\n            \"has_ui_surface\": facts.has_ui_surface,\n            \"framework\": facts.framework,\n            \"source_files\": facts.source_files,\n            \"tokens\": facts.tokens.as_dict(),\n            \"updated_sections\": updated_sections,\n            \"preserved_sections\": preserved_sections,\n            \"diff\": diff_output,\n            \"lint\": {\n                \"is_valid\": lint_report.is_valid,\n                \"errors\": lint_report.errors,\n                \"warnings\": lint_report.warnings,\n                \"missing_sections\": lint_report.missing_sections,\n                \"contrast_findings\": [\n                    {\n                        \"fg\": f\"{f.fg_key} ({f.fg_hex})\",\n                        \"bg\": f\"{f.bg_key} ({f.bg_hex})\",\n                        \"ratio\": f\"{f.ratio}:1\",\n                        \"status\": f.status,\n                        \"notes\": f.notes,\n                    }\n                    for f in lint_report.contrast_findings\n                ],\n            },\n        }\n        print(json.dumps(payload, indent=2))\n        return 0 if (not args.lint or lint_report.is_valid) else 1\n\n    if args.lint:\n        print(f\"Linting {design_md_path.\n\u2026 (truncated)",
+    "content_hash": "b6f44affb830ef7831fb9210455e304245c8bfe2d5b7ed5610c95314417010f8",
+    "parent_id": "file:.agents/skills/design-md/scripts/detect_design_md.py",
+    "callers": [],
+    "callees": [],
+    "doc_path": ".buddhi/docs/.agents/skills/design-md/scripts/detect_design_md/main.md",
     "needs_generation": true
   },
   {

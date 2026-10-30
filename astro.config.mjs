@@ -10,15 +10,24 @@ import locals from "./src/config/locals.json";
 import sidebar from "./src/config/sidebar.json";
 
 import { fileURLToPath } from "url";
+import { env } from "node:process";
 
 const { site } = config;
 const { title } = site;
+const isGitHubPages = env.ASTRO_DEPLOY_TARGET === "github-pages";
 
 export const locales = locals
 
 
 // https://astro.build/config
 export default defineConfig({
+  ...(isGitHubPages
+    ? {
+        site: "https://buddhilive.github.io",
+        base: "/buddhi-ai-website",
+        outDir: "./docs",
+      }
+    : {}),
   image: {
     service: { entrypoint: "astro/assets/services/noop" },
   },

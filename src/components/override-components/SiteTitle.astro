@@ -1,5 +1,6 @@
 ---
 import config from "@/config/config.json" assert { type: "json" };
+import { withBaseUrl } from "@/lib/utils/withBaseUrl";
 const { siteTitleHref } = Astro.locals.starlightRoute;
 
 const { logo, logo_width, logo_height, title } = config.site;
@@ -7,7 +8,7 @@ const { logo, logo_width, logo_height, title } = config.site;
 
 <a href={siteTitleHref} class="navbar-brand inline-block">
   <img
-    src={logo}
+    src={withBaseUrl(logo, import.meta.env.BASE_URL)}
     alt={title}
     width={logo_width}
     height={logo_height}

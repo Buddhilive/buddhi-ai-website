@@ -6,6 +6,8 @@ sidebar:
   label: "[rocket] Installation"
 ---
 
+import { withBaseUrl } from "@/lib/utils/withBaseUrl";
+
 Install the `buddhi` command with Python 3.10 or newer. Include the `mcp` extra if you also need the `buddhi-mcp` server.
 
 ---
@@ -97,7 +99,7 @@ buddhi --help
 buddhi-mcp --help
 ```
 
-The help output lists the commands available in the installed version. For command details, see the [CLI command reference](/cli/commands/).
+The help output lists the commands available in the installed version. For command details, see the <a href={withBaseUrl("/cli/commands/", import.meta.env.BASE_URL)}>CLI command reference</a>.
 
 ---
 
@@ -134,4 +136,4 @@ $env:PYTHONUTF8 = "1"
 
 ## Next Steps
 
-Now that BuddhiAI CLI is installed, learn how to initialize your projects in the [Commands Reference](/cli/commands/).
+Now that BuddhiAI CLI is installed, learn how to initialize your projects in the <a href={withBaseUrl("/cli/commands/", import.meta.env.BASE_URL)}>Commands Reference</a>.

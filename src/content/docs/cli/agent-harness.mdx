@@ -6,6 +6,8 @@ sidebar:
   label: Agent harness
 ---
 
+import { withBaseUrl } from "@/lib/utils/withBaseUrl";
+
 `buddhi init` can scaffold an Antigravity harness in `.agents/`. The harness connects a workspace to `buddhi-mcp` and provides reusable workflows, specialist agent definitions, rules, hooks, templates, and a memory index. Existing customized harness files are preserved when `buddhi init` runs again.
 
 ## What gets scaffolded
@@ -32,7 +34,7 @@ Use the SDD workflow to describe and verify a change before considering it compl
 4. `/implement` executes tasks and records progress.
 5. `/verify` runs the project checks and maps results to acceptance criteria.
 
-`buddhi sdd` provides supporting helpers used by these workflows. See the [command reference](/cli/commands/#buddhi-sdd).
+`buddhi sdd` provides supporting helpers used by these workflows. See the <a href={withBaseUrl("/cli/commands/#buddhi-sdd", import.meta.env.BASE_URL)}>command reference</a>.
 
 ## Other bundled workflows
 
@@ -54,7 +56,7 @@ The harness includes read-only specialists for frontend, backend, database, test
 
 - Rules provide shared guidance for graph and OKF documentation use, safety, accessibility, and code conventions.
 - The `PreToolUse` hook in `.agents/hooks/guard_destructive.py` blocks selected destructive operations, including force pushes, hard resets, and database drop or truncate commands. Treat it as a safety backstop, not a replacement for reviewing a command.
-- `.agents/memory/MEMORY.md` indexes project memory topics. The `buddhi memory` commands manage structured concepts, source references, and index updates; see [Project memory](/cli/memory/).
+- `.agents/memory/MEMORY.md` indexes project memory topics. The `buddhi memory` commands manage structured concepts, source references, and index updates; see <a href={withBaseUrl("/cli/memory/", import.meta.env.BASE_URL)}>Project memory</a>.
 
 ## A typical workflow
 

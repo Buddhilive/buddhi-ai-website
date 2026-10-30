@@ -6,6 +6,8 @@ sidebar:
   label: MCP server and tools
 ---
 
+import { withBaseUrl } from "@/lib/utils/withBaseUrl";
+
 BuddhiAI CLI includes an MCP server that communicates over stdio. Install the package with the `[mcp]` extra to install the `buddhi-mcp` entry point:
 
 ```sh
@@ -49,7 +51,7 @@ Reads a repository file with AST-aware compression and a token budget. The suppo
 
 ### `buddhi_memory`
 
-Queries and reads structured project memory, captures a memory concept, and validates memory data. It supports path-scoped filtering and recursive `@path` imports up to five hops. The available memory operations also have CLI equivalents under [`buddhi memory`](/cli/memory/).
+Queries and reads structured project memory, captures a memory concept, and validates memory data. It supports path-scoped filtering and recursive `@path` imports up to five hops. The available memory operations also have CLI equivalents under <a href={withBaseUrl("/cli/memory/", import.meta.env.BASE_URL)}><code>buddhi memory</code></a>.
 
 ### `check_contrast`
 
@@ -63,4 +65,4 @@ Runs the A11Y.md static verification gate against project source and accessibili
 
 The MCP tools query the generated graph. Run `buddhi generate` after code changes to refresh graph artifacts. `buddhi generate` does not refresh `.buddhi/docs-plan.json`; run `buddhi docs plan` when that plan also needs updating.
 
-For details on graph storage and analysis, see [Graph analysis](/cli/graph-analysis/). For the MCP tool's package requirements, see [Installation](/cli/installation/).
+For details on graph storage and analysis, see <a href={withBaseUrl("/cli/graph-analysis/", import.meta.env.BASE_URL)}>Graph analysis</a>. For the MCP tool's package requirements, see <a href={withBaseUrl("/cli/installation/", import.meta.env.BASE_URL)}>Installation</a>.

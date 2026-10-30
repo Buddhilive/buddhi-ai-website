@@ -7,6 +7,8 @@ hero:
   tagline: Build a code graph for your repository, connect coding agents through MCP, and scaffold an Antigravity harness for structured development.
 ---
 
+import { withBaseUrl } from "@/lib/utils/withBaseUrl";
+
 ## Start with your codebase
 
 Install the package, then run `buddhi init` from a repository. The command scans supported source files, writes a graph under `.buddhi/graphs/`, plans code documentation, and scaffolds an agent harness.
@@ -16,7 +18,7 @@ pip install "buddhi-ai[mcp]"
 buddhi init
 ```
 
-See the [installation guide](/cli/installation/) for pipx, uv, and platform notes.
+See the <a href={withBaseUrl("/cli/installation/", import.meta.env.BASE_URL)}>installation guide</a> for pipx, uv, and platform notes.
 
 ## What the CLI provides
 
@@ -29,12 +31,12 @@ See the [installation guide](/cli/installation/) for pipx, uv, and platform note
 
 ## Choose a guide
 
-- [CLI overview](/cli/) explains the graph, MCP server, and harness.
-- [Installation](/cli/installation/) covers Python requirements and package managers.
-- [Commands](/cli/commands/) lists the CLI command groups.
-- [Graph analysis](/cli/graph-analysis/) explains graph inspection commands.
-- [Documentation generation](/cli/documentation/) covers OKF docs and the Pelican site.
-- [MCP server and tools](/cli/mcp-server/) documents the server interfaces.
-- [Project memory](/cli/memory/) covers memory commands and concepts.
-- [Scripts and utilities](/cli/scripts/) describes the bundled utilities.
-- [Agent harness](/cli/agent-harness/) explains workflows, skills, rules, and hooks.
+- <a href={withBaseUrl("/cli/", import.meta.env.BASE_URL)}>CLI overview</a> explains the graph, MCP server, and harness.
+- <a href={withBaseUrl("/cli/installation/", import.meta.env.BASE_URL)}>Installation</a> covers Python requirements and package managers.
+- <a href={withBaseUrl("/cli/commands/", import.meta.env.BASE_URL)}>Commands</a> lists the CLI command groups.
+- <a href={withBaseUrl("/cli/graph-analysis/", import.meta.env.BASE_URL)}>Graph analysis</a> explains graph inspection commands.
+- <a href={withBaseUrl("/cli/documentation/", import.meta.env.BASE_URL)}>Documentation generation</a> covers OKF docs and the Pelican site.
+- <a href={withBaseUrl("/cli/mcp-server/", import.meta.env.BASE_URL)}>MCP server and tools</a> documents the server interfaces.
+- <a href={withBaseUrl("/cli/memory/", import.meta.env.BASE_URL)}>Project memory</a> covers memory commands and concepts.
+- <a href={withBaseUrl("/cli/scripts/", import.meta.env.BASE_URL)}>Scripts and utilities</a> describes the bundled utilities.
+- <a href={withBaseUrl("/cli/agent-harness/", import.meta.env.BASE_URL)}>Agent harness</a> explains workflows, skills, rules, and hooks.

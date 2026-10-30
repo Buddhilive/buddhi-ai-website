@@ -7,4 +7,6 @@ hero:
   tagline: Check the address or return to the BuddhiAI CLI guide.
 ---
 
-[Open the CLI documentation](/cli/).
+import { withBaseUrl } from "@/lib/utils/withBaseUrl";
+
+<a href={withBaseUrl("/cli/", import.meta.env.BASE_URL)}>Open the CLI documentation</a>.

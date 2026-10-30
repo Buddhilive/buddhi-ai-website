@@ -6,6 +6,8 @@ sidebar:
   label: Commands
 ---
 
+import { withBaseUrl } from "@/lib/utils/withBaseUrl";
+
 Run `buddhi --help` or `buddhi <command> --help` for the options supported by your installed version.
 
 ## Command groups
@@ -37,7 +39,7 @@ The command writes:
 - `.agents/mcp_config.json` and missing harness files
 - `AGENTS.md` if the project does not already have one
 
-See [Agent harness](/cli/agent-harness/) for generated files and workflows.
+See <a href={withBaseUrl("/cli/agent-harness/", import.meta.env.BASE_URL)}>Agent harness</a> for generated files and workflows.
 
 ## `buddhi generate`
 
@@ -60,7 +62,7 @@ buddhi graph cycles
 buddhi graph community
 ```
 
-See [Graph analysis](/cli/graph-analysis/) for what these reports contain.
+See <a href={withBaseUrl("/cli/graph-analysis/", import.meta.env.BASE_URL)}>Graph analysis</a> for what these reports contain.
 
 ## `buddhi mcp`
 
@@ -68,11 +70,11 @@ See [Graph analysis](/cli/graph-analysis/) for what these reports contain.
 buddhi mcp [--db-path <path>] [--root <path>]
 ```
 
-Starts the MCP server over stdio. The `mcp` package extra is required. You can also run the installed `buddhi-mcp` entry point directly. See [MCP server and tools](/cli/mcp-server/).
+Starts the MCP server over stdio. The `mcp` package extra is required. You can also run the installed `buddhi-mcp` entry point directly. See <a href={withBaseUrl("/cli/mcp-server/", import.meta.env.BASE_URL)}>MCP server and tools</a>.
 
 ## `buddhi docs`
 
-For the `docs` group's serve, build, and plan workflows, see [Documentation generation](/cli/documentation/).
+For the `docs` group's serve, build, and plan workflows, see <a href={withBaseUrl("/cli/documentation/", import.meta.env.BASE_URL)}>Documentation generation</a>.
 
 ## `buddhi sdd`
 
@@ -88,7 +90,7 @@ The helpers used by the SDD workflows are:
 - `check`: validate SDD inputs; supports `--require-tasks`, `--include-tasks`, `--paths-only`, and `--json`.
 - `resolve-template <name>`: resolve a template from project or built-in templates.
 
-The agent-facing workflow is described in [Agent harness](/cli/agent-harness/).
+The agent-facing workflow is described in <a href={withBaseUrl("/cli/agent-harness/", import.meta.env.BASE_URL)}>Agent harness</a>.
 
 ## `buddhi skills`
 
@@ -104,7 +106,7 @@ Lists available custom skills. `--repo-to-skill` installs the repository-analysi
 buddhi memory [subcommand] [options]
 ```
 
-Manage structured project memory, including status, add, search, read, validate, sync, compact, migrate, and SDD promotion. See [Project memory](/cli/memory/) for scopes and common operations.
+Manage structured project memory, including status, add, search, read, validate, sync, compact, migrate, and SDD promotion. See <a href={withBaseUrl("/cli/memory/", import.meta.env.BASE_URL)}>Project memory</a> for scopes and common operations.
 
 ## `buddhi scripts`
 
@@ -112,4 +114,4 @@ Manage structured project memory, including status, add, search, read, validate,
 buddhi scripts [subcommand] [options]
 ```
 
-Run bundled utilities, including color-contrast checks, A11Y.md verification, anti-slop settings, file-size checks, visual parity comparisons, receipts, and RTK output filtering. See [Scripts and utilities](/cli/scripts/) for supported operations.
+Run bundled utilities, including color-contrast checks, A11Y.md verification, anti-slop settings, file-size checks, visual parity comparisons, receipts, and RTK output filtering. See <a href={withBaseUrl("/cli/scripts/", import.meta.env.BASE_URL)}>Scripts and utilities</a> for supported operations.

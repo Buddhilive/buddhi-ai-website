@@ -23,8 +23,8 @@ export const locales = locals
 export default defineConfig({
   ...(isGitHubPages
     ? {
-        site: "https://buddhilive.github.io",
-        base: "/buddhi-ai-website",
+        site: "https://cli.buddhilive.com",
+        base: "/",
         outDir: "./docs",
       }
     : {}),

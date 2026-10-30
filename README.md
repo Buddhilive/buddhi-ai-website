@@ -26,11 +26,12 @@ pnpm run preview
 The GitHub Actions workflow builds the site into `/docs` and publishes it when
 a version tag beginning with `v` is pushed (for example, `v1.2.3`). In the
 repository settings, set **Pages → Build and deployment → Source** to
-**GitHub Actions**. The project site is served at
-`https://buddhilive.github.io/buddhi-ai-website/`.
+**GitHub Actions** and configure `cli.buddhilive.com` as the custom domain.
+The site uses the domain root, so links do not include a repository subpath.
 
 The generated `/docs` output is ignored by Git and uploaded directly as the
-Pages deployment artifact. Other build targets keep the default `dist/` output.
+Pages deployment artifact. The `public/CNAME` file places the custom domain in
+that artifact. Other build targets keep the default `dist/` output.
 
 ## Site structure
 

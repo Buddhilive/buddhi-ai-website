@@ -1,17 +1,7 @@
 {
   "main": [
     {
-      "label": "Web",
-      "translations": {
-        "fr": "Web"
-      },
-      "autogenerate": { "directory": "web" }
-    },
-    {
-      "label": "CLI",
-      "translations": {
-        "fr": "CLI"
-      },
+      "label": "BuddhiAI CLI",
       "autogenerate": { "directory": "cli" }
     }
   ]

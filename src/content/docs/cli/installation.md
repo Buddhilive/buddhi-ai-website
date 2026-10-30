@@ -1,12 +1,12 @@
 ---
-title: "Installation & Setup"
-description: "Step-by-step instructions for installing BuddhiAI CLI and the Model Context Protocol (MCP) server."
+title: "Install BuddhiAI CLI"
+description: "Install BuddhiAI CLI and its optional Model Context Protocol server."
 sidebar:
   order: 2
   label: "[rocket] Installation"
 ---
 
-This guide provides step-by-step instructions for installing the **BuddhiAI CLI** and its dedicated `buddhi-mcp` entrypoint on your machine.
+Install the `buddhi` command with Python 3.10 or newer. Include the `mcp` extra if you also need the `buddhi-mcp` server.
 
 ---
 
@@ -14,8 +14,8 @@ This guide provides step-by-step instructions for installing the **BuddhiAI CLI*
 
 - **Python**: Version **3.10** or higher is required.
 - **Package Manager**: One of `pip`, `pipx`, or `uv`.
-- **Operating System**: macOS, Linux, or Windows.
-- **Tree-sitter runtime**: Bundled automatically with dependencies.
+- **Operating System**: The package is OS independent.
+- **MCP server**: Install the `[mcp]` extra to use `buddhi-mcp`.
 
 Verify your Python version:
 
@@ -60,9 +60,9 @@ pipx upgrade buddhi-ai
 
 ---
 
-### Method 3: Using uv (Fastest & Recommended)
+### Method 3: Using uv
 
-If you use [Astral's `uv`](https://github.com/astral-sh/uv), you can install BuddhiAI CLI as a standalone global tool in seconds:
+If you use [Astral's `uv`](https://github.com/astral-sh/uv), install BuddhiAI CLI as an isolated tool:
 
 ```sh
 uv tool install "buddhi-ai[mcp]"
@@ -97,22 +97,7 @@ buddhi --help
 buddhi-mcp --help
 ```
 
-Expected output for `buddhi --help`:
-
-```text
-Usage: buddhi [OPTIONS] COMMAND [ARGS]...
-
-buddhi - tree-sitter code graph generator.
-
-+- Commands ------------------------------------------------------------------+
-| generate  Scan PATH, build a code graph, and write it to .buddhi/graphs/.   |
-| init      Build the code graph, plan docs, and scaffold a Google            |
-|           Antigravity agent harness.                                        |
-| mcp       Run the Buddhi Model Context Protocol (MCP) server over StdIO.    |
-| docs      Documentation planning for the current code graph.                |
-| sdd       Spec-Driven Development (SDD) scripts and prerequisite checks.    |
-+-----------------------------------------------------------------------------+
-```
+The help output lists the commands available in the installed version. For command details, see the [CLI command reference](/cli/commands/).
 
 ---
 

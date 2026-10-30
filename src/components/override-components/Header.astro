@@ -25,22 +25,33 @@ const hasSidebar = Astro.locals.starlightRoute.hasSidebar;
     <SiteTitle />
   </div>
   <!-- navbar toggler -->
-  <input id="nav-toggle" type="checkbox" class="hidden" />
-  <label
-    for="nav-toggle"
-    class="order-3 cursor-pointer flex items-center lg:hidden dark:text-white lg:order-1 hamburger-menu"
+  <button
+    id="nav-toggle"
+    type="button"
+    aria-expanded="false"
+    aria-controls="nav-menu"
+    aria-label="Open menu"
+    class="order-3 cursor-pointer flex items-center justify-center min-h-11 min-w-11 lg:hidden dark:text-white lg:order-1 hamburger-menu"
   >
-    <svg id="show-button" class="h-6 fill-current block" viewBox="0 0 20 20">
-      <title>Menu Open</title>
+    <svg
+      id="show-button"
+      aria-hidden="true"
+      class="h-6 fill-current block"
+      viewBox="0 0 20 20"
+    >
       <path d="M0 3h20v2H0V3z m0 6h20v2H0V9z m0 6h20v2H0V0z"></path>
     </svg>
-    <svg id="hide-button" class="h-6 fill-current hidden" viewBox="0 0 20 20">
-      <title>Menu Close</title>
+    <svg
+      id="hide-button"
+      aria-hidden="true"
+      class="h-6 fill-current hidden"
+      viewBox="0 0 20 20"
+    >
       <polygon
         points="11 9 22 9 22 11 11 11 11 22 9 22 9 11 -2 11 -2 9 9 9 9 -2 11 -2"
         transform="rotate(45 10 10)"></polygon>
     </svg>
-  </label>
+  </button>
   <!-- /navbar toggler -->
   <ul
     id="nav-menu"
@@ -136,10 +147,7 @@ const hasSidebar = Astro.locals.starlightRoute.hasSidebar;
           class="btn btn-outline-primary hidden! lg:inline-block!"
           href={navigation_button.link}
         >
-          {navigation_button.translations
-            ? // @ts-ignore
-              navigation_button.translations[locale] || navigation_button.label
-            : navigation_button.label}
+          {navigation_button.label}
         </a>
       )
     }
@@ -147,6 +155,32 @@ const hasSidebar = Astro.locals.starlightRoute.hasSidebar;
 </nav>
 
 <script>
+  const navToggle = document.querySelector<HTMLButtonElement>("#nav-toggle");
+  const navMenu = document.querySelector<HTMLUListElement>("#nav-menu");
+
+  function setMenuExpanded(expanded: boolean) {
+    navToggle?.setAttribute("aria-expanded", String(expanded));
+    navToggle?.setAttribute("aria-label", expanded ? "Close menu" : "Open menu");
+  }
+
+  navToggle?.addEventListener("click", () => {
+    setMenuExpanded(navToggle.getAttribute("aria-expanded") !== "true");
+  });
+
+  navMenu?.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => setMenuExpanded(false));
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (
+      event.key === "Escape" &&
+      navToggle?.getAttribute("aria-expanded") === "true"
+    ) {
+      setMenuExpanded(false);
+      navToggle.focus();
+    }
+  });
+
   // add header bg after scroll
   const nav = document.querySelector(".navbar");
   const sidebar = document.querySelector(".sidebar-nav");
@@ -164,8 +198,6 @@ const hasSidebar = Astro.locals.starlightRoute.hasSidebar;
     }
   };
 
-  // Dropdown Menu Toggler For Mobile
-  // ----------------------------------------
   const dropdownMenuToggler = document.querySelectorAll(
     ".nav-dropdown > .nav-link"
   ) as NodeListOf<HTMLElement>;

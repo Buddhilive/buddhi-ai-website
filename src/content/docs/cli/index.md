@@ -1,109 +1,42 @@
 ---
-title: "BuddhiAI CLI Overview"
-description: "Turn your codebase into a topology-aware code graph, Model Context Protocol (MCP) server, and Antigravity agent harness."
+title: BuddhiAI CLI overview
+description: Learn how BuddhiAI CLI builds a code graph and connects it to MCP tools and an Antigravity agent harness.
 sidebar:
   order: 1
-  label: "[document] Overview"
+  label: Overview
 ---
 
-**BuddhiAI CLI** turns any software codebase into what an AI coding agent actually needs:
-- A **code graph** detailing files, directories, classes, functions, and methods along with their containment, import, and call relationships via tree-sitter.
-- A **Model Context Protocol (MCP) server** (`buddhi-mcp`) providing topology-driven search and compressed, AST-pruned file reading.
-- A fully scaffolded **Google Antigravity agent harness** grounded in that code graph.
-- A complete **Spec-Driven Development (SDD)** lifecycle workflow grounded in open standards like [AGENTS.md](https://agents.md/).
+BuddhiAI CLI turns a software repository into a local code graph and a set of tools and workflows for coding agents. The package requires Python 3.10 or newer and installs the `buddhi` command. The optional `mcp` extra also installs the `buddhi-mcp` stdio server.
 
----
+## Main parts
 
-## Core Value Proposition
+### Code graph
 
-Traditional AI coding assistants rely on basic keyword grep, lexical search, or massive brute-force context stuffing. When working on large codebases, this exhausts context windows, loses structural relationships, and leads to hallucinations.
+`buddhi init` and `buddhi generate` parse supported source with tree-sitter and write graph artifacts under `.buddhi/graphs/`. The graph records files, directories, classes, functions, methods, imports, calls, and containment relationships. `tree-graph.db` backs graph queries; `tree-graph.json` and `tree-graph.html` provide visualization artifacts.
 
-BuddhiAI CLI solves this by providing:
+The graph supports `buddhi graph` commands for statistics, community analysis, dependency paths, import cycles, and blast-radius investigation. See [Graph analysis](/cli/graph-analysis/).
 
-1. **Topology-Driven Context**: Maps dependencies, call hierarchies, and structural bridges so agents understand *what calls what* before touching code.
-2. **Dynamic AST Compression**: Reads source code through intelligent compression modes (`auto`, `signatures`, `map`, `entropy`, `full`) within strict character and token budgets.
-3. **Open Knowledge Format (OKF) Codebase Docs**: Documents symbols bottom-up in dependency order, maintaining content hashes for staleness detection.
-4. **Spec-Driven Development (SDD)**: Enforces rigor through formalized specification (`/specify`), architecture planning (`/plan`), task breakdown (`/tasks`), implementation (`/implement`), and evidence-based verification (`/verify`).
+### MCP server
 
----
+`buddhi-mcp` runs over stdio and provides tools for code search, compressed file reading, project memory, contrast checks, and accessibility verification. See [MCP server and tools](/cli/mcp-server/).
 
-## Architecture Overview
+### OKF documentation and memory
 
-```mermaid
-flowchart TD
-    subgraph LocalCodebase["Source Codebase"]
-        Source[Source Files]
-    end
+`buddhi docs` generates documentation in Google Open Knowledge Format (OKF) from the graph and can build or serve the generated Pelican site. `buddhi memory` manages source-aware concepts and memory indexes. These operate on the target repository; see [Documentation generation](/cli/documentation/) and [Project memory](/cli/memory/).
 
-    subgraph BuddhiCLI["BuddhiAI CLI Engine"]
-        TS[tree-sitter Parsers]
-        CG[Code Graph Builder]
-        SQLite[(tree-graph.db)]
-        Cyto[tree-graph.json / html]
-        DocsPlan[docs-plan.json]
-    end
+### Antigravity harness
 
-    subgraph InterfaceLayer["Agent Interfaces"]
-        MCPServer["buddhi-mcp (StdIO)"]
-        Harness[".agents/ Harness"]
-    end
+`buddhi init` can scaffold `.agents/` with workflows, specialist agents, rules, hooks, templates, and a memory index. The included workflows support specification, planning, task breakdown, implementation, and verification. See [Agent harness](/cli/agent-harness/).
 
-    subgraph Agents["Google Antigravity IDE / Agent"]
-        SearchTool["buddhi_search"]
-        ReadTool["buddhi_read"]
-        Workflows["SDD Workflows (/specify, /plan, /tasks...)"]
-        Specialists["Domain Specialists & terminal-runner"]
-    end
+## Supported languages
 
-    Source --> TS --> CG
-    CG --> SQLite
-    CG --> Cyto
-    CG --> DocsPlan
+The CLI parses Python, JavaScript, TypeScript and TSX, Go, Rust, C#, Java, Kotlin, and Swift. Import and call resolution is best-effort; see the accuracy notes in the [CLI README](https://github.com/Buddhilive/buddhi-cli#notes-on-accuracy).
 
-    SQLite --> MCPServer
-    MCPServer --> SearchTool
-    MCPServer --> ReadTool
-    Harness --> Workflows
-    Harness --> Specialists
-```
+## Common setup
 
----
+1. Install BuddhiAI CLI with the MCP extra using the [installation guide](/cli/installation/).
+2. From the repository root, run `buddhi init`.
+3. Open the repository in Google Antigravity to use the generated harness and workspace MCP configuration.
+4. Run `buddhi generate` after source changes to refresh the graph.
 
-## Supported Languages
-
-BuddhiAI CLI parses and constructs AST relationships across modern development stacks:
-
-- **Python** (`.py`)
-- **JavaScript** (`.js`, `.jsx`, `.mjs`, `.cjs`)
-- **TypeScript** (`.ts`, `.tsx`)
-- **Go** (`.go`)
-- **Rust** (`.rs`)
-- **C#** (`.cs`)
-- **Java** (`.java`)
-- **Kotlin** (`.kt`, `.kts`)
-- **Swift** (`.swift`)
-
----
-
-## What BuddhiAI CLI Scaffolds
-
-When you run `buddhi init` in your repository, it generates:
-
-| Artifact / Path | Description |
-| :--- | :--- |
-| `AGENTS.md` | Standard project conventions, commands, and non-negotiable guidelines for AI agents at repository root. |
-| `.buddhi/graphs/tree-graph.db` | SQLite database indexing `nodes` and `edges` for fast CTE queries (call hierarchy, callers/callees). |
-| `.buddhi/graphs/tree-graph.json` | Cytoscape.js compatible graph format. |
-| `.buddhi/graphs/tree-graph.html` | Interactive graph visualization viewer viewable in any browser. |
-| `.buddhi/docs-plan.json` | Staleness-aware dependency documentation roadmap. |
-| `.agents/mcp_config.json` | Model Context Protocol configuration auto-connecting Antigravity to `buddhi-mcp`. |
-| `.agents/` | Google Antigravity harness: slash workflows, specialist subagents, rules, skills, and memory index. |
-
----
-
-## Next Steps
-
-- Proceed to [Installation Guide](/cli/installation/) to install the CLI and MCP extras.
-- Explore the [Commands Reference](/cli/commands/) to learn `buddhi init`, `generate`, `mcp`, and `sdd`.
-- Check out the [MCP Server & Tools](/cli/mcp-server/) for details on `buddhi_search` and `buddhi_read`.
-- Discover the [Antigravity Agent Harness](/cli/agent-harness/) to master the SDD agent workflows.
+Browse the [command reference](/cli/commands/) for command syntax and the [MCP guide](/cli/mcp-server/) for connecting other compatible clients.

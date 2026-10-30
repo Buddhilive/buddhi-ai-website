@@ -4,7 +4,21 @@
 
 ## Decisions
 
-- **Documentation Search Combobox** -> `role="combobox"` on `#search-input` with `aria-controls="search-results-list"`, `aria-expanded`, and default `<li role="option">` hint - WAI-ARIA APG Combobox pattern for client-side search. (2026-10-27)
-- **Interactive Graph Navigation** -> Dedicated accessible anchor in header with visible text and explanatory title - ensures direct navigation without modal trap. (2026-10-27)
-- **High-Contrast Dark Theme** -> `#f1f5f9` text on `#0b0f19` background (17.48:1 ratio) with sky-400 focus ring (8.94:1 ratio) - passes WCAG 2.2 AA Standard Profile without relying on low-contrast glow. (2026-10-27)
+- **BuddhiAI CLI website palette** -> Owner-selected `#A7452A` remains the primary; the CTA uses the existing theme surface instead of the unrelated DocKit screenshot. The accent gradient stays within readable text and component-boundary contrast in both themes. (2026-10-30)
 
+  | Pair | Ratio | Floor |
+  | :--- | ---: | ---: |
+  | `#999999` on dark body `#0D0D0D` | 6.822:1 | 4.5:1 |
+  | Dark focus ring `#E0BEB4` on `#0D0D0D` | 11.285:1 | 3:1 |
+  | Dark accent link `#E5C7BF` on `#0D0D0D` | 12.266:1 | 4.5:1 |
+  | White CTA text on gradient start `#AB4E35` | 5.423:1 | 4.5:1 |
+  | White CTA text on primary `#A7452A` | 5.953:1 | 4.5:1 |
+  | White CTA text on gradient end `#B25B44` | 4.695:1 | 4.5:1 |
+  | Gradient start `#AB4E35` on dark body `#0D0D0D` | 3.584:1 | 3:1 |
+  | Primary `#A7452A` on dark body `#0D0D0D` | 3.265:1 | 3:1 |
+  | Gradient end `#B25B44` on dark body `#0D0D0D` | 4.140:1 | 3:1 |
+  | Light body text `#000000` on `#FFFFFF` | 21.000:1 | 4.5:1 |
+  | Light focus ring `#A7452A` on `#FFFFFF` | 5.953:1 | 3:1 |
+  | Light primary link `#A7452A` on `#FFFFFF` | 5.953:1 | 4.5:1 |
+  | Dark CTA body text `#999999` on surface `#151515` | 6.410:1 | 4.5:1 |
+  | Light CTA body text `#000000` on surface `#F7F7F7` | 19.602:1 | 4.5:1 |

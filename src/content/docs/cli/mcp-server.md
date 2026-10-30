@@ -1,138 +1,66 @@
 ---
-title: "MCP Server & Tools"
-description: "Model Context Protocol (MCP) server integration, topology-aware search, and AST-pruned reading tools."
+title: MCP server and tools
+description: Connect an MCP client to BuddhiAI CLI and learn about its repository, memory, contrast, and accessibility tools.
 sidebar:
-  order: 4
-  label: "[seti:code-search] MCP Server & Tools"
+  order: 6
+  label: MCP server and tools
 ---
 
-The **Buddhi Model Context Protocol (MCP) Server** (`buddhi-mcp`) provides AI coding agents with a structured, topology-aware interface to understand, navigate, and read codebases without overflowing context windows.
+BuddhiAI CLI includes an MCP server that communicates over stdio. Install the package with the `[mcp]` extra to install the `buddhi-mcp` entry point:
 
----
-
-## Why MCP for Codebases?
-
-LLM context windows are precious and prone to retrieval degradation when overloaded with hundreds of raw files. Rather than relying on simple text grep, `buddhi-mcp` connects agents directly to the AST-indexed SQLite code graph and provides two specialized tools:
-
-1. **`buddhi_search`**: Topology-aware code search with community expansion and entropy filtering.
-2. **`buddhi_read`**: Dynamic, AST-pruned file reader with token budgeting and multiple compression modes.
-
----
-
-## Server Architecture & Transport
-
-`buddhi-mcp` runs locally as a child process using the **StdIO** transport:
-
-```mermaid
-sequenceDiagram
-    participant Agent as Antigravity Agent
-    participant MCP as buddhi-mcp (StdIO)
-    participant DB as SQLite (tree-graph.db)
-    participant Disk as Filesystem
-
-    Agent->>MCP: Call buddhi_search(query, max_results, budget)
-    MCP->>DB: Query lexical anchors + recursive CTE graph expansion
-    DB-->>MCP: Related nodes, callers, callees, definitions
-    MCP->>MCP: Filter boilerplate (Shannon entropy) & sort by U-curve
-    MCP-->>Agent: Compact, high-relevance structural context
-
-    Agent->>MCP: Call buddhi_read(path, mode, token_budget)
-    MCP->>Disk: Read raw source file
-    MCP->>MCP: Parse AST via tree-sitter & apply compression mode
-    MCP-->>Agent: AST-pruned code representation
+```sh
+pip install "buddhi-ai[mcp]"
 ```
 
----
+Start it from a project that has a generated graph:
 
-## Workspace Integration
+```sh
+buddhi mcp --root .
+```
 
-When you run `buddhi init`, it automatically creates `.agents/mcp_config.json` inside your project:
+You can also run `buddhi-mcp --root .`. Pass `--db-path <path>` to select a graph database explicitly. The `--root` option anchors graph database lookup, relative paths, and repository searches to a project directory.
+
+## Antigravity configuration
+
+`buddhi init` creates `.agents/mcp_config.json` with the workspace server registration. Its command and arguments are:
 
 ```json
 {
   "mcpServers": {
     "buddhi-mcp": {
       "command": "buddhi-mcp",
-      "args": [
-        "--root",
-        "."
-      ]
+      "args": ["--root", "."]
     }
   }
 }
 ```
 
-Google Antigravity detects this configuration upon opening the workspace, making the tools available to all workflows and subagents.
+For other MCP clients, use their workspace configuration format to run `buddhi-mcp` with the project root. MCP server configuration differs by client.
 
----
+## Available tools
 
-## Tool Reference: `buddhi_search`
+### `buddhi_search`
 
-Performs structural, topology-driven search across the repository.
+Searches the code graph using lexical anchors, then expands through graph relationships to find related symbols, callers, callees, and structural bridges. It filters repetitive or low-information snippets and orders results to keep important context visible within the response budget.
 
-### Signature & Arguments
+### `buddhi_read`
 
-| Parameter | Type | Required | Description |
-| :--- | :--- | :--- | :--- |
-| `query` | `string` | **Yes** | Symbol name, function name, class, or keyword to search for. |
-| `max_results` | `integer` | No | Maximum number of primary nodes to return (default: `10`). |
-| `budget` | `integer` | No | Maximum character budget allocated for the search result. |
-| `include_signatures` | `boolean` | No | Whether to include extracted method signatures for found nodes. |
+Reads a repository file with AST-aware compression and a token budget. The supported modes are `auto`, `signatures`, `map`, `entropy`, and `full`. Use `signatures` for declarations, `map` for a file outline, `entropy` for information-dense sections, and `full` when the entire file is needed. `auto` selects a representation based on the budget.
 
-### How the Algorithm Works
+### `buddhi_memory`
 
-1. **Lexical Anchoring**: Locates seed nodes matching the query in symbol definitions and file paths.
-2. **Graph Expansion**: Traverses edges in `tree-graph.db` to locate callers, callees, parent classes, and bridge nodes within the graph neighborhood.
-3. **Entropy Filtering**: Evaluates Shannon entropy on candidate snippets to eliminate autogenerated boilerplate, large static lookup tables, and repetitive noise.
-4. **U-Curve Positional Layout**: Sorts results so the most vital structural anchors appear at the start and end of the output, countering the LLM "lost in the middle" attention phenomenon.
+Queries and reads structured project memory, captures a memory concept, and validates memory data. It supports path-scoped filtering and recursive `@path` imports up to five hops. The available memory operations also have CLI equivalents under [`buddhi memory`](/cli/memory/).
 
----
+### `check_contrast`
 
-## Tool Reference: `buddhi_read`
+Checks color pairs against WCAG 2.x contrast thresholds. The `buddhi scripts contrast` command provides corresponding CLI checks and stylesheet triage.
 
-Reads source files with AST-pruning and compression to preserve context tokens.
+### `verify_a11y`
 
-### Signature & Arguments
+Runs the A11Y.md static verification gate against project source and accessibility release evidence. The CLI equivalent is `buddhi scripts verify-a11y`.
 
-| Parameter | Type | Required | Description |
-| :--- | :--- | :--- | :--- |
-| `path` | `string` | **Yes** | Relative path to the file in the workspace. |
-| `mode` | `string` | No | Compression strategy: `auto`, `signatures`, `map`, `entropy`, `full`. Default: `auto`. |
-| `token_budget` | `integer` | No | Target token budget. Compression level increases if file exceeds budget. |
-| `focus_lines` | `string` | No | Optional range (e.g. `45-80`) to keep full detail while compressing surrounding context. |
+## Keep the graph current
 
-### Compression Modes
+The MCP tools query the generated graph. Run `buddhi generate` after code changes to refresh graph artifacts. `buddhi generate` does not refresh `.buddhi/docs-plan.json`; run `buddhi docs plan` when that plan also needs updating.
 
-| Mode | Description | Best For |
-| :--- | :--- | :--- |
-| `auto` | Dynamically selects the highest fidelity mode that fits within `token_budget`. | General agent reading. |
-| `signatures` | Retains file header, imports, classes, and function/method signatures while stripping implementation bodies (`...`). | Understanding API contracts without seeing internal code. |
-| `map` | Produces an outline map of all classes, functions, and line ranges. | Navigating large files (1,000+ LOC). |
-| `entropy` | Preserves non-repetitive blocks with high informational density while condensing boilerplate. | Analyzing algorithmic routines. |
-| `full` | Returns the raw, uncompressed source code. | Making precise line edits or viewing small files (<200 LOC). |
-
-### Example: Signatures Mode Output
-
-When reading a 500-line Python service with `mode: "signatures"`:
-
-```python
-# [Buddhi AST Compressed: signatures mode]
-class OrderService:
-    def __init__(self, db: DatabaseClient, cache: CacheProvider) -> None: ...
-    def create_order(self, customer_id: str, items: list[OrderItem]) -> Order: ...
-    def cancel_order(self, order_id: str, reason: str) -> bool: ...
-    def calculate_tax(self, subtotal: Decimal, state: str) -> Decimal: ...
-```
-
-The agent receives the entire public interface in just 50 tokens instead of consuming 1,200 tokens reading function bodies.
-
----
-
-## Manual Testing of MCP Tools
-
-You can verify the MCP server directly from your terminal using Python or standard MCP inspection clients:
-
-```sh
-# Start the MCP server interactive StdIO session
-buddhi mcp --root .
-```
+For details on graph storage and analysis, see [Graph analysis](/cli/graph-analysis/). For the MCP tool's package requirements, see [Installation](/cli/installation/).

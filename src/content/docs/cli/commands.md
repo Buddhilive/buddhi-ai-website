@@ -1,193 +1,115 @@
 ---
-title: "CLI Commands Reference"
-description: "Complete command-line interface reference for buddhi init, generate, mcp, docs plan, and sdd."
+title: CLI command reference
+description: Command groups for initializing projects, refreshing code graphs, and using BuddhiAI CLI features.
 sidebar:
   order: 3
-  label: "[seti:powershell] Commands Reference"
+  label: Commands
 ---
 
-BuddhiAI CLI provides a suite of commands to build code graphs, prepare agent harnesses, manage documentation roadmaps, and power Spec-Driven Development.
+Run `buddhi --help` or `buddhi <command> --help` for the options supported by your installed version.
 
----
+## Command groups
 
-## Command Summary
-
-| Command | Description |
-| :--- | :--- |
-| [`buddhi init [path]`](#buddhi-init) | Complete setup: builds code graph, plans docs, creates `AGENTS.md`, and scaffolds Antigravity harness. |
-| [`buddhi generate [path]`](#buddhi-generate) | Scans code and rebuilds `.buddhi/graphs/` without touching harness or docs. |
-| [`buddhi mcp`](#buddhi-mcp) | Launches the Model Context Protocol server over StdIO. |
-| [`buddhi docs plan [path]`](#buddhi-docs-plan) | Recomputes documentation plan and detects stale documentation. |
-| [`buddhi sdd <subcommand>`](#buddhi-sdd) | Helpers for Spec-Driven Development workflows (`create`, `setup-plan`, `setup-tasks`, `check`). |
-
----
+| Command | Purpose |
+| --- | --- |
+| [`buddhi init`](#buddhi-init) | Build the initial graph, plan documentation, and scaffold project instructions and the Antigravity harness. |
+| [`buddhi generate`](#buddhi-generate) | Refresh graph artifacts after source changes. |
+| [`buddhi graph`](#buddhi-graph) | Analyze graph structure, communities, paths, cycles, and change impact. |
+| [`buddhi mcp`](#buddhi-mcp) | Start the MCP server over stdio. |
+| [`buddhi docs`](#buddhi-docs) | Generate OKF docs, build or serve their Pelican site, or refresh the docs plan. |
+| [`buddhi sdd`](#buddhi-sdd) | Run helpers used by Spec-Driven Development workflows. |
+| [`buddhi skills`](#buddhi-skills) | Inspect or install supported custom agent skills. |
+| [`buddhi memory`](#buddhi-memory) | Manage project memory concepts and indexes. |
+| [`buddhi scripts`](#buddhi-scripts) | Run accessibility, contrast, RTK, and other developer utilities. |
 
 ## `buddhi init`
-
-The primary initialization command. Run this once in any new or existing project repository.
 
 ```sh
 buddhi init [path]
 ```
 
-### What it Does
+Initializes the current directory or the optional `path`. It builds the graph, computes the documentation plan, creates `AGENTS.md` if missing, and scaffolds an Antigravity harness. Existing customized `AGENTS.md` and `.agents/` files are not overwritten.
 
-1. **Scans the target codebase**: Detects supported languages and parses abstract syntax trees using tree-sitter.
-2. **Builds the Code Graph**: Identifies classes, methods, functions, calls, imports, and containment hierarchies.
-3. **Computes Documentation Roadmap**: Prepares `.buddhi/docs-plan.json` in bottom-up dependency order.
-4. **Scaffolds `AGENTS.md`**: Creates root project instructions, command guidelines, and architecture rules.
-5. **Scaffolds `.agents/` Harness**: Installs slash commands/workflows, domain specialists, safety hooks, and memory templates.
-6. **Configures MCP Server**: Writes `.agents/mcp_config.json` with pre-anchored paths for Google Antigravity.
+The command writes:
 
-### Generated File Hierarchy
+- `.buddhi/graphs/tree-graph.json`, `tree-graph.db`, and `tree-graph.html`
+- `.buddhi/docs-plan.json`
+- `.agents/mcp_config.json` and missing harness files
+- `AGENTS.md` if the project does not already have one
 
-```text
-your-project/
-├── AGENTS.md                          # Standard agent guidelines & rules
-├── .buddhi/
-│   ├── .gitignore                     # Ignores graphs/ and docs/
-│   ├── docs-plan.json                 # Dependency-aware doc plan
-│   └── graphs/
-│       ├── tree-graph.json            # Cytoscape.js elements format
-│       ├── tree-graph.db              # SQLite relational graph database
-│       └── tree-graph.html            # Interactive visualizer viewer
-└── .agents/
-    ├── mcp_config.json                # Registers buddhi-mcp with IDE
-    ├── workflows/                     # Slash commands (/specify, /plan, /tasks...)
-    ├── agents/                        # Domain specialist subagents
-    ├── rules/                         # Project guardrails & memory conventions
-    ├── skills/                        # Knowledge graph & doc generation skills
-    ├── hooks.json                     # PreToolUse hook configurations
-    ├── hooks/guard_destructive.py     # Destructive command safety guard
-    └── memory/MEMORY.md               # Durable context and decisions index
-```
-
-### Idempotency Guarantee
-
-`buddhi init` is **fully idempotent**. Running it multiple times will never overwrite custom edits you made to files in `.agents/` or `AGENTS.md`. It only creates missing files and refreshes the graph database.
-
----
+See [Agent harness](/cli/agent-harness/) for generated files and workflows.
 
 ## `buddhi generate`
-
-Refreshes the code graph when code changes.
 
 ```sh
 buddhi generate [path]
 ```
 
-### Usage Notes
+Rebuilds the graph artifacts under `.buddhi/graphs/`. It does not update `.buddhi/docs-plan.json` or scaffold `.agents/`. Run `buddhi docs plan` separately when you also need a refreshed documentation plan.
 
-- Scans `path` (defaults to current working directory) and updates:
-  - `.buddhi/graphs/tree-graph.db` (SQLite)
-  - `.buddhi/graphs/tree-graph.json` (Cytoscape JSON)
-  - `.buddhi/graphs/tree-graph.html` (Interactive HTML visualizer)
-- **Does not touch** `.agents/` or `.buddhi/docs-plan.json`.
-- **When to run**: Run this whenever new functions, files, or dependencies are added to keep the SQLite database queried by `buddhi_search` fresh.
+## `buddhi graph`
 
----
+Analyze an existing graph:
+
+```sh
+buddhi graph stats
+buddhi graph analyze
+buddhi graph blast-radius
+buddhi graph path MyService AuthManager
+buddhi graph cycles
+buddhi graph community
+```
+
+See [Graph analysis](/cli/graph-analysis/) for what these reports contain.
 
 ## `buddhi mcp`
 
-Runs the Model Context Protocol (MCP) server over **StdIO**, exposing code graph search and compressed reading tools to AI agents.
-
 ```sh
-buddhi mcp [OPTIONS]
+buddhi mcp [--db-path <path>] [--root <path>]
 ```
 
-Or execute the direct entrypoint:
+Starts the MCP server over stdio. The `mcp` package extra is required. You can also run the installed `buddhi-mcp` entry point directly. See [MCP server and tools](/cli/mcp-server/).
 
-```sh
-buddhi-mcp [OPTIONS]
-```
+## `buddhi docs`
 
-### Options
-
-| Option | Flag | Description |
-| :--- | :--- | :--- |
-| `--db-path` | `-d PATH` | Explicit path to `.buddhi/graphs/tree-graph.db`. Defaults to finding it in the workspace. |
-| `--root` | `-r PATH` | Anchors the repository root directory for relative file paths and search queries. |
-
-Example manual run:
-
-```sh
-buddhi-mcp --root . --db-path .buddhi/graphs/tree-graph.db
-```
-
----
-
-## `buddhi docs plan`
-
-Recomputes `.buddhi/docs-plan.json` against the current source tree without touching `.agents/` or overwriting existing graph files.
-
-```sh
-buddhi docs plan [path]
-```
-
-### What it Does
-
-- Detects newly added or modified source files.
-- Computes cryptographic SHA-256 hashes of symbol ranges.
-- Marks stale Open Knowledge Format (OKF) docs under `.buddhi/docs/` for regeneration.
-- This command is called automatically by the `/document-codebase` and `/plan` Antigravity workflows.
-
----
+For the `docs` group's serve, build, and plan workflows, see [Documentation generation](/cli/documentation/).
 
 ## `buddhi sdd`
 
-Underlying helper commands utilized by Spec-Driven Development workflows.
-
 ```sh
-buddhi sdd <COMMAND> [OPTIONS]
+buddhi sdd <command> [options]
 ```
 
-### Subcommands
+The helpers used by the SDD workflows are:
 
-#### `buddhi sdd create <description>`
-Scaffolds a new feature branch and directory under `.buddhi/specs/<branch>/`, initializes `spec.md` from the spec template, and returns branch metadata.
+- `create <description>`: create a feature branch and spec directory.
+- `setup-plan`: prepare the plan for the active feature.
+- `setup-tasks`: check prerequisites and return task-generation context.
+- `check`: validate SDD inputs; supports `--require-tasks`, `--include-tasks`, `--paths-only`, and `--json`.
+- `resolve-template <name>`: resolve a template from project or built-in templates.
+
+The agent-facing workflow is described in [Agent harness](/cli/agent-harness/).
+
+## `buddhi skills`
+
 ```sh
-buddhi sdd create "Add user authentication" --json
+buddhi skills [--repo-to-skill] [--path <path>] [--force]
 ```
 
-#### `buddhi sdd setup-plan`
-Verifies that `spec.md` exists and sets up `plan.md` for the active feature branch using `plan-template.md`.
+Lists available custom skills. `--repo-to-skill` installs the repository-analysis skill; `--path` selects a project root, and `--force` allows replacing existing installed skill files. Run `buddhi skills --help` for the complete option syntax.
+
+## `buddhi memory`
+
 ```sh
-buddhi sdd setup-plan --json
+buddhi memory [subcommand] [options]
 ```
 
-#### `buddhi sdd setup-tasks`
-Verifies prerequisites and outputs task resolution context for generating `tasks.md`.
+Manage structured project memory, including status, add, search, read, validate, sync, compact, migrate, and SDD promotion. See [Project memory](/cli/memory/) for scopes and common operations.
+
+## `buddhi scripts`
+
 ```sh
-buddhi sdd setup-tasks --json
+buddhi scripts [subcommand] [options]
 ```
 
-#### `buddhi sdd check`
-Consolidated prerequisite checker supporting `--require-tasks`, `--include-tasks`, `--paths-only`, and `--json`.
-```sh
-buddhi sdd check --require-tasks --include-tasks --json
-```
-
-#### `buddhi sdd resolve-template <name>`
-Resolves and composes templates across `.agents/templates/` and built-in defaults.
-
----
-
-## Recommended Daily Workflow
-
-1. **Initial Setup**:
-   ```sh
-   buddhi init
-   ```
-2. **Open in Google Antigravity IDE**.
-3. **Start a new feature**:
-   Run `/specify <feature description>` in chat.
-4. **Architect the solution**:
-   Run `/plan` to synthesize specialist agent research.
-5. **Break into actionable tasks**:
-   Run `/tasks` to produce a user-story checklist.
-6. **Implement & Verify**:
-   Run `/implement` to write code, followed by `/verify` to test against acceptance criteria.
-7. **Refresh graph after large changes**:
-   ```sh
-   buddhi generate
-   ```
+Run bundled utilities, including color-contrast checks, A11Y.md verification, anti-slop settings, file-size checks, visual parity comparisons, receipts, and RTK output filtering. See [Scripts and utilities](/cli/scripts/) for supported operations.
